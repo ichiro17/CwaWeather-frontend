@@ -4,27 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>森森天氣</title>
-    <link rel="icon" type="image/png" href="./icon-v2.png">
-    <link rel="apple-touch-icon" href="./icon-v2.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="./icon-v2.png">
+    <title>小張報氣象 - 中華職棒全隊版</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700;900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
 
     <style>
-        :root {
-            --ac-green: #7DE1A9;
-            --ac-bg-pattern: #8FD8AF;
-            --ac-cream: #FFFEF2;
-            --ac-yellow: #F9F195;
-            --ac-brown: #796452;
-            --ac-blue: #4FB5D9;
-            --ac-dark: #58504A;
-            --ac-card-border: #E6E0C8;
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -33,173 +18,293 @@
         }
 
         body {
-            font-family: 'Zen Maru Gothic', sans-serif;
-            background-color: var(--ac-green);
-            /* 更細緻的斜紋背景 */
-            background-image:
-                repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255, 255, 255, 0.2) 20px, rgba(255, 255, 255, 0.2) 40px);
+            font-family: 'Noto Sans TC', sans-serif;
             min-height: 100vh;
-            color: var(--ac-dark);
-            /* 防止 iOS 左右滑動 */
+            color: #1A1A1A;
             overflow-x: hidden;
             padding-bottom: 20px;
+            transition: background 0.5s ease;
         }
 
-        /* 頂部狀態列 */
+        /* 球隊配色變數會由 JavaScript 動態設定 */
+        body.brothers {
+            background: linear-gradient(135deg, #002D62 0%, #003D79 100%);
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(255, 184, 28, 0.05) 30px, rgba(255, 184, 28, 0.05) 60px);
+        }
+
+        body.lions {
+            background: linear-gradient(135deg, #1A1A1A 0%, #3A3A3A 100%);
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(255, 102, 0, 0.05) 30px, rgba(255, 102, 0, 0.05) 60px);
+        }
+
+        body.monkeys {
+            background: linear-gradient(135deg, #8B1538 0%, #C8102E 100%);
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(255, 105, 180, 0.08) 30px, rgba(255, 105, 180, 0.08) 60px);
+        }
+
+        body.guardians {
+            background: linear-gradient(135deg, #003087 0%, #0055B8 100%);
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(0, 174, 239, 0.08) 30px, rgba(0, 174, 239, 0.08) 60px);
+        }
+
+        body.dragons {
+            background: linear-gradient(135deg, #C8102E 0%, #E4002B 100%);
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(255, 255, 255, 0.05) 30px, rgba(255, 255, 255, 0.05) 60px);
+        }
+
+        body.hawks {
+            background: linear-gradient(135deg, #004D40 0%, #00695C 100%);
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(212, 175, 55, 0.08) 30px, rgba(212, 175, 55, 0.08) 60px);
+        }
+
         .status-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 15px 20px;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(10px);
             position: sticky;
             top: 0;
             z-index: 100;
+            border-bottom: 4px solid var(--team-primary);
         }
 
         .location-pill {
-            background: var(--ac-yellow);
-            color: var(--ac-brown);
-            padding: 5px 15px;
-            border-radius: 20px;
+            background: var(--team-primary);
+            color: var(--team-text);
+            padding: 8px 20px;
+            border-radius: 25px;
             font-weight: 900;
             font-size: 1.1rem;
-            transform: rotate(-2deg);
+            transform: skewX(-5deg);
             border: 2px solid white;
-            box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
+            box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
         }
 
         .update-pill {
-            font-size: 0.8rem;
-            color: white;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 4px 10px;
-            border-radius: 12px;
+            font-size: 0.85rem;
+            color: var(--team-primary);
+            background: rgba(255, 255, 255, 0.15);
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-weight: bold;
+            border: 1px solid var(--team-primary);
         }
 
         .container {
             padding: 20px;
             max-width: 600px;
-            /* 限制在大手機寬度 */
             margin: 0 auto;
         }
 
-        /* === 核心：今日焦點卡片 === */
-        .hero-card {
-            background: var(--ac-cream);
-            border-radius: 35px;
-            padding: 30px 25px;
+        .app-title {
             text-align: center;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            border: 4px solid white;
             margin-bottom: 25px;
             position: relative;
         }
 
-        /* 像動森的對話氣泡 */
+        .app-title h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--team-primary);
+            text-shadow: 3px 3px 0 var(--team-secondary), 6px 6px 0 rgba(0, 0, 0, 0.3);
+            transform: skewY(-2deg);
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+        }
+
+        .app-subtitle {
+            font-size: 0.9rem;
+            color: var(--team-primary);
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .team-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+        }
+
+        .team-btn {
+            padding: 12px 8px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-weight: 900;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+        }
+
+        .team-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .team-btn.active {
+            background: var(--team-primary);
+            border-color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            transform: scale(1.05);
+        }
+
+        .hero-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
+            border-radius: 20px;
+            padding: 30px 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            border: 4px solid var(--team-primary);
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-card::before {
+            content: var(--team-emoji);
+            position: absolute;
+            font-size: 15rem;
+            opacity: 0.05;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(15deg);
+            pointer-events: none;
+        }
+
         .hero-period {
             position: absolute;
             top: -15px;
             left: 50%;
-            transform: translateX(-50%);
-            background: var(--ac-blue);
-            color: white;
-            padding: 5px 20px;
-            border-radius: 20px;
-            font-weight: bold;
+            background: var(--team-primary);
+            color: var(--team-text);
+            padding: 8px 25px;
+            border-radius: 25px;
+            font-weight: 900;
             border: 3px solid white;
-            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            font-size: 1rem;
+            letter-spacing: 2px;
+            transform: translateX(-50%) skewX(-5deg);
         }
 
         .hero-temp-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
-            margin: 15px 0;
+            gap: 15px;
+            margin: 20px 0;
+            position: relative;
+            z-index: 1;
         }
 
         .hero-icon {
-            font-size: 5rem;
-            filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.1));
+            font-size: 5.5rem;
+            filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.2));
             animation: bounce 3s infinite;
         }
 
         @keyframes bounce {
-
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-10px);
-            }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
         }
 
         .hero-temp {
-            font-size: 4.5rem;
+            font-size: 5rem;
             font-weight: 900;
-            color: var(--ac-brown);
+            color: var(--team-primary);
             line-height: 1;
+            text-shadow: 2px 2px 0 var(--team-secondary), 4px 4px 0 rgba(0, 0, 0, 0.1);
+            transform: skewY(-3deg);
         }
 
         .hero-desc {
-            font-size: 1.5rem;
-            color: #8A7B70;
+            font-size: 1.6rem;
+            color: #1A1A1A;
             margin-bottom: 20px;
-            font-weight: bold;
+            font-weight: 900;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
         }
 
-        /* === 上班族最愛的：快速建議區 === */
         .advice-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 2px dashed #E0D8C0;
+            border-top: 3px dashed var(--team-primary);
+            position: relative;
+            z-index: 1;
         }
 
         .advice-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: rgba(255, 255, 255, 0.5);
-            padding: 10px;
-            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+            padding: 15px 10px;
+            border-radius: 15px;
+            border: 2px solid var(--team-primary);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .advice-item:hover {
+            transform: translateY(-3px);
         }
 
         .advice-icon {
-            font-size: 2rem;
-            margin-bottom: 5px;
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
         }
 
         .advice-text {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: 900;
-            color: var(--ac-brown);
+            color: var(--team-primary);
             margin: 5px 0;
             line-height: 1.2;
+            letter-spacing: 0.5px;
         }
 
-        /* === 稍後預報：橫向滑動區 === */
+        .advice-subtext {
+            font-size: 0.75rem;
+            color: #666;
+            font-weight: bold;
+        }
+
         .section-title {
-            font-size: 1.2rem;
-            color: white;
+            font-size: 1.4rem;
+            color: var(--team-primary);
             margin-bottom: 15px;
             margin-left: 10px;
             font-weight: 900;
-            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
+            text-shadow: 2px 2px 0 var(--team-secondary), 4px 4px 0 rgba(0, 0, 0, 0.2);
+            letter-spacing: 2px;
+            transform: skewX(-3deg);
+            display: inline-block;
+            padding: 8px 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border-left: 5px solid var(--team-primary);
         }
 
         .scroll-container {
             display: flex;
             overflow-x: auto;
             gap: 15px;
-            padding-bottom: 10px;
-            /* 隱藏滾動條但保留功能 */
+            padding-bottom: 15px;
             scrollbar-width: none;
             -ms-overflow-style: none;
         }
@@ -209,78 +314,206 @@
         }
 
         .mini-card {
-            min-width: 140px;
-            background: rgba(255, 255, 255, 0.85);
-            border-radius: 25px;
+            min-width: 150px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
+            border-radius: 20px;
             padding: 20px 15px;
             text-align: center;
-            border: 3px solid white;
+            border: 3px solid var(--team-primary);
             flex-shrink: 0;
-            /* 防止被擠壓 */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mini-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--team-primary);
         }
 
         .mini-time {
-            background: var(--ac-green);
-            color: white;
-            padding: 3px 10px;
-            border-radius: 10px;
-            font-size: 0.8rem;
+            background: var(--team-secondary);
+            color: var(--team-primary);
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
             display: inline-block;
-            margin-bottom: 10px;
-            font-weight: bold;
+            margin-bottom: 12px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .mini-icon {
-            font-size: 2.5rem;
-            margin: 5px 0;
+            font-size: 3rem;
+            margin: 8px 0;
+            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.15));
         }
 
         .mini-temp {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: var(--ac-dark);
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: var(--team-primary);
+            letter-spacing: 0.5px;
         }
 
-        /* Loading 畫面 */
+        .mini-rain {
+            font-size: 0.85rem;
+            color: #4A90E2;
+            margin-top: 8px;
+            font-weight: bold;
+        }
+
         .loading-screen {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: var(--ac-green);
+            background: linear-gradient(135deg, #002D62 0%, #003D79 100%);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 999;
         }
+
+        .loading-icon {
+            font-size: 5rem;
+            animation: spin 2s linear infinite;
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #FFB81C;
+            font-weight: 900;
+            margin-top: 25px;
+            font-size: 1.3rem;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
     </style>
 </head>
 
-<body>
+<body class="brothers">
     <div id="loading" class="loading-screen">
-        <div style="font-size: 4rem; animation: bounce 2s infinite;">☁️</div>
-        <p style="color: white; font-weight: bold; margin-top: 20px;">正在觀測雲的流動...</p>
+        <div class="loading-icon">⚾</div>
+        <p class="loading-text">小張正在觀測氣象中...</p>
     </div>
+
     <div class="status-bar">
-        <div class="location-pill">📍 臺南</div>
+        <div class="location-pill" id="locationPill">📍 臺中</div>
         <div id="updateTime" class="update-pill">更新中...</div>
     </div>
 
     <div class="container" id="mainContent" style="display: none;">
-
-        <div id="heroCard">
+        <div class="app-title">
+            <h1>⚾ 小張報氣象 ⚾</h1>
+            <div class="app-subtitle">WEATHER FORECAST · CPBL STYLE</div>
         </div>
 
-        <h3 class="section-title">稍後預報</h3>
-        <div class="scroll-container" id="futureForecasts">
+        <div class="team-selector">
+            <button class="team-btn active" data-team="brothers">🐘 中信兄弟</button>
+            <button class="team-btn" data-team="lions">🦁 統一獅</button>
+            <button class="team-btn" data-team="monkeys">🐵 樂天桃猿</button>
+            <button class="team-btn" data-team="guardians">🛡️ 富邦悍將</button>
+            <button class="team-btn" data-team="dragons">🐉 味全龍</button>
+            <button class="team-btn" data-team="hawks">🦅 台鋼雄鷹</button>
         </div>
 
+        <div id="heroCard"></div>
+
+        <h3 class="section-title">📋 稍後預報</h3>
+        <div class="scroll-container" id="futureForecasts"></div>
     </div>
 
     <script>
-        const API_URL = "https://weather-cpbl.zeabur.app/api/weather/tainan";
+        const TEAMS = {
+            brothers: {
+                name: '中信兄弟',
+                city: 'kaohsiung',
+                cityName: '臺中',
+                emoji: '🐘',
+                primary: '#FFB81C',
+                secondary: '#002D62',
+                text: '#002D62'
+            },
+            lions: {
+                name: '統一獅',
+                city: 'kaohsiung',
+                cityName: '臺南',
+                emoji: '🦁',
+                primary: '#FF6600',
+                secondary: '#1A1A1A',
+                text: '#FFFFFF'
+            },
+            monkeys: {
+                name: '樂天桃猿',
+                city: 'kaohsiung',
+                cityName: '桃園',
+                emoji: '🐵',
+                primary: '#C8102E',
+                secondary: '#8B1538',
+                text: '#FFFFFF'
+            },
+            guardians: {
+                name: '富邦悍將',
+                city: 'kaohsiung',
+                cityName: '新北',
+                emoji: '🛡️',
+                primary: '#0055B8',
+                secondary: '#003087',
+                text: '#FFFFFF'
+            },
+            dragons: {
+                name: '味全龍',
+                city: 'kaohsiung',
+                cityName: '臺北',
+                emoji: '🐉',
+                primary: '#E4002B',
+                secondary: '#C8102E',
+                text: '#FFFFFF'
+            },
+            hawks: {
+                name: '台鋼雄鷹',
+                city: 'kaohsiung',
+                cityName: '高雄',
+                emoji: '🦅',
+                primary: '#00695C',
+                secondary: '#004D40',
+                text: '#FFFFFF'
+            }
+        };
+
+        let currentTeam = 'brothers';
+
+        function setTeamTheme(teamId) {
+            const team = TEAMS[teamId];
+            document.body.className = teamId;
+            document.documentElement.style.setProperty('--team-primary', team.primary);
+            document.documentElement.style.setProperty('--team-secondary', team.secondary);
+            document.documentElement.style.setProperty('--team-text', team.text);
+            document.documentElement.style.setProperty('--team-emoji', `"${team.emoji}"`);
+            
+            document.getElementById('locationPill').textContent = `📍 ${team.cityName}`;
+            
+            document.querySelectorAll('.team-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.team === teamId);
+            });
+            
+            currentTeam = teamId;
+            localStorage.setItem('selectedTeam', teamId);
+        }
 
         function getWeatherIcon(weather) {
             if (!weather) return "🌤️";
@@ -302,15 +535,33 @@
 
             let clothIcon = "👕";
             let clothText = "舒適穿搭";
-            if (parseInt(maxTemp) >= 28) {
+            let tempAdvice = "";
+            
+            const temp = parseInt(maxTemp);
+            
+            if (temp >= 33) {
                 clothIcon = "🎽";
+                clothText = "超熱！背心上場";
+                tempAdvice = "記得補充水分";
+            } else if (temp >= 28) {
+                clothIcon = "👕";
                 clothText = "短袖出發";
-            } else if (parseInt(maxTemp) <= 20) {
+                tempAdvice = "適合戶外活動";
+            } else if (temp >= 23) {
+                clothIcon = "👔";
+                clothText = "長袖剛剛好";
+                tempAdvice = "舒適宜人";
+            } else if (temp >= 18) {
                 clothIcon = "🧥";
-                clothText = "加件外套";
+                clothText = "薄外套備著";
+                tempAdvice = "早晚溫差大";
+            } else {
+                clothIcon = "🧥";
+                clothText = "厚外套必備";
+                tempAdvice = "注意保暖";
             }
 
-            return { rainIcon, rainText, clothIcon, clothText };
+            return { rainIcon, rainText, clothIcon, clothText, tempAdvice };
         }
 
         function getTimePeriod(startTime) {
@@ -327,62 +578,56 @@
             const current = forecasts[0];
             const others = forecasts.slice(1);
 
-            // 1. 渲染 Hero Card (主畫面)
             const advice = getAdvice(current.rain, current.maxTemp);
             const period = getTimePeriod(current.startTime);
             const avgTemp = Math.round((parseInt(current.maxTemp) + parseInt(current.minTemp)) / 2);
 
             document.getElementById('heroCard').innerHTML = `
-                        <div class="hero-card">
-                            <div class="hero-period">${period}</div>
-                            <div class="hero-temp-container">
-                                <div class="hero-icon">${getWeatherIcon(current.weather)}</div>
-                                <div class="hero-temp">${avgTemp}°</div>
-                            </div>
-                            <div class="hero-desc">${current.weather}</div>
-                            
-                            <div class="advice-grid">
-                                <div class="advice-item">
-                                    <div class="advice-icon">${advice.rainIcon}</div>
-                                    <div class="advice-text">${advice.rainText}</div>
-                                    <div style="font-size:0.7rem; color:#999">降雨率 ${current.rain}</div>
-                                </div>
-                                <div class="advice-item">
-                                    <div class="advice-icon">${advice.clothIcon}</div>
-                                    <div class="advice-text">${advice.clothText}</div>
-                                    <div style="font-size:0.7rem; color:#999">最高溫 ${current.maxTemp}°</div>
-                                </div>
-                            </div>
+                <div class="hero-card">
+                    <div class="hero-period">${period}</div>
+                    <div class="hero-temp-container">
+                        <div class="hero-icon">${getWeatherIcon(current.weather)}</div>
+                        <div class="hero-temp">${avgTemp}°</div>
+                    </div>
+                    <div class="hero-desc">${current.weather}</div>
+                    
+                    <div class="advice-grid">
+                        <div class="advice-item">
+                            <div class="advice-icon">${advice.rainIcon}</div>
+                            <div class="advice-text">${advice.rainText}</div>
+                            <div class="advice-subtext">降雨機率 ${current.rain}</div>
                         </div>
-                    `;
+                        <div class="advice-item">
+                            <div class="advice-icon">${advice.clothIcon}</div>
+                            <div class="advice-text">${advice.clothText}</div>
+                            <div class="advice-subtext">${advice.tempAdvice}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
 
-            // 2. 渲染稍後預報 (包含明天判斷)
             const scrollContainer = document.getElementById('futureForecasts');
             scrollContainer.innerHTML = '';
 
-            // 抓今天的日期數字 (例如 24)
             const todayDate = new Date().getDate();
 
             others.forEach(f => {
                 let p = getTimePeriod(f.startTime);
-
-                // 判斷該預報的日期是否跟今天不同，不同就是明天
                 const fDate = new Date(f.startTime);
                 if (fDate.getDate() !== todayDate) {
                     p = "明天" + p;
                 }
 
                 scrollContainer.innerHTML += `
-                            <div class="mini-card">
-                                <div class="mini-time">${p}</div>
-                                <div class="mini-icon">${getWeatherIcon(f.weather)}</div>
-                                <div class="mini-temp">${f.minTemp}° - ${f.maxTemp}°</div>
-                                <div style="font-size:0.8rem; color:#888; margin-top:5px;">💧${f.rain}</div>
-                            </div>
-                        `;
+                    <div class="mini-card">
+                        <div class="mini-time">${p}</div>
+                        <div class="mini-icon">${getWeatherIcon(f.weather)}</div>
+                        <div class="mini-temp">${f.minTemp}° - ${f.maxTemp}°</div>
+                        <div class="mini-rain">💧 ${f.rain}</div>
+                    </div>
+                `;
             });
 
-            // 3. 右上角顯示今日日期
             const now = new Date();
             const month = now.getMonth() + 1;
             const date = now.getDate();
@@ -392,22 +637,15 @@
             document.getElementById('updateTime').textContent = `${month}月${date}日 ${days[dayIndex]}`;
         }
 
-        async function fetchWeather() {
+        async function fetchWeather(city) {
             try {
-                // 1. 定義「最低等待時間」：1500 毫秒 (1.5秒)
-                const delayPromise = new Promise(resolve => setTimeout(resolve, 1500));
-
-                // 2. 定義「抓取資料」的工作
+                const API_URL = `https://weather-cpbl.zeabur.app/api/weather/${city}`;
+                const delayPromise = new Promise(resolve => setTimeout(resolve, 1000));
                 const fetchPromise = fetch(API_URL).then(res => res.json());
-
-                // 3. Promise.all 會等待「兩個都完成」才會往下走
-                // result 陣列裡，第一個是 delay 的結果(沒用到)，第二個是 api 的 json 資料
                 const [_, json] = await Promise.all([delayPromise, fetchPromise]);
 
                 if (json.success) {
                     renderWeather(json.data);
-
-                    // 資料處理好後，隱藏 Loading，顯示主畫面
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('mainContent').style.display = 'block';
                 } else {
@@ -415,11 +653,25 @@
                 }
             } catch (e) {
                 console.error(e);
-                alert("天氣資料讀取失敗，狸克把網路線咬斷了！");
+                alert("天氣資料讀取失敗,請稍後再試!");
             }
         }
 
-        document.addEventListener("DOMContentLoaded", fetchWeather);
+        document.querySelectorAll('.team-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const teamId = btn.dataset.team;
+                setTeamTheme(teamId);
+                document.getElementById('loading').style.display = 'flex';
+                document.getElementById('mainContent').style.display = 'none';
+                fetchWeather(TEAMS[teamId].city);
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedTeam = localStorage.getItem('selectedTeam') || 'brothers';
+            setTeamTheme(savedTeam);
+            fetchWeather(TEAMS[savedTeam].city);
+        });
     </script>
 </body>
 
