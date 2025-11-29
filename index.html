@@ -4,12 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>小張報氣象 - 中華職棒全隊版</title>
+    <title>小張報氣象 2.0 - 中華職棒全隊版</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
 
     <style>
+        :root {
+            --team-primary: #FFB81C;
+            --team-secondary: #002D62;
+            --team-text: #002D62;
+            --team-emoji: "🐘";
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -26,7 +33,7 @@
             transition: background 0.5s ease;
         }
 
-        /* 球隊配色變數會由 JavaScript 動態設定 */
+        /* --- 球隊主題配色 --- */
         body.brothers {
             background: linear-gradient(135deg, #002D62 0%, #003D79 100%);
             background-image: repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(255, 184, 28, 0.05) 30px, rgba(255, 184, 28, 0.05) 60px);
@@ -57,6 +64,7 @@
             background-image: repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(212, 175, 55, 0.08) 30px, rgba(212, 175, 55, 0.08) 60px);
         }
 
+        /* --- 頂部狀態列 --- */
         .status-bar {
             display: flex;
             justify-content: space-between;
@@ -83,14 +91,21 @@
             letter-spacing: 1px;
         }
 
-        .update-pill {
-            font-size: 0.85rem;
-            color: var(--team-primary);
-            background: rgba(255, 255, 255, 0.15);
+        .share-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid white;
             padding: 6px 12px;
             border-radius: 15px;
+            font-size: 0.85rem;
+            cursor: pointer;
             font-weight: bold;
-            border: 1px solid var(--team-primary);
+            transition: 0.2s;
+        }
+
+        .share-btn:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.4);
         }
 
         .container {
@@ -99,70 +114,67 @@
             margin: 0 auto;
         }
 
+        /* --- 標題區 --- */
         .app-title {
             text-align: center;
-            margin-bottom: 25px;
-            position: relative;
+            margin-bottom: 20px;
         }
 
         .app-title h1 {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 900;
             color: var(--team-primary);
-            text-shadow: 3px 3px 0 var(--team-secondary), 6px 6px 0 rgba(0, 0, 0, 0.3);
+            text-shadow: 2px 2px 0 var(--team-secondary), 4px 4px 0 rgba(0, 0, 0, 0.3);
             transform: skewY(-2deg);
-            letter-spacing: 3px;
             margin-bottom: 5px;
         }
 
         .app-subtitle {
-            font-size: 0.9rem;
-            color: var(--team-primary);
-            font-weight: bold;
-            letter-spacing: 2px;
+            font-size: 0.8rem;
+            color: #fff;
+            opacity: 0.8;
+            letter-spacing: 3px;
         }
 
+        /* --- 球隊選擇器 --- */
         .team-selector {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin: 20px 0;
-            padding: 15px;
+            gap: 8px;
+            margin-bottom: 25px;
+            padding: 10px;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 15px;
         }
 
         .team-btn {
-            padding: 12px 8px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 4px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
             color: white;
-            font-weight: 900;
-            font-size: 0.9rem;
+            font-weight: 700;
+            font-size: 0.85rem;
             cursor: pointer;
-            transition: all 0.3s;
-            letter-spacing: 0.5px;
-        }
-
-        .team-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s;
         }
 
         .team-btn.active {
             background: var(--team-primary);
+            color: var(--team-text);
             border-color: white;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            transform: scale(1.02);
+            font-weight: 900;
         }
 
+        /* --- 主卡片 --- */
         .hero-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
             border-radius: 20px;
-            padding: 30px 25px;
+            padding: 30px 20px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             border: 4px solid var(--team-primary);
             margin-bottom: 25px;
             position: relative;
@@ -173,330 +185,319 @@
             content: var(--team-emoji);
             position: absolute;
             font-size: 15rem;
-            opacity: 0.05;
+            opacity: 0.06;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(15deg);
             pointer-events: none;
         }
 
-        .hero-period {
+        .status-badge {
             position: absolute;
-            top: -15px;
-            left: 50%;
-            background: var(--team-primary);
-            color: var(--team-text);
-            padding: 8px 25px;
-            border-radius: 25px;
-            font-weight: 900;
-            border: 3px solid white;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            font-size: 1rem;
-            letter-spacing: 2px;
-            transform: translateX(-50%) skewX(-5deg);
+            top: 15px;
+            right: 15px;
+            background: #e74c3c;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: none; /* JS控制 */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .status-badge.good {
+            background: #27ae60;
+        }
+
+        .hero-period {
+            display: inline-block;
+            background: var(--team-secondary);
+            color: #fff;
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
         }
 
         .hero-temp-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 15px;
-            margin: 20px 0;
-            position: relative;
-            z-index: 1;
+            gap: 10px;
         }
 
         .hero-icon {
-            font-size: 5.5rem;
-            filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.2));
-            animation: bounce 3s infinite;
+            font-size: 5rem;
+            filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.2));
+            animation: float 3s ease-in-out infinite;
         }
 
-        @keyframes bounce {
+        @keyframes float {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
+            50% { transform: translateY(-10px); }
         }
 
         .hero-temp {
-            font-size: 5rem;
+            font-size: 4.5rem;
             font-weight: 900;
-            color: var(--team-primary);
+            color: var(--team-secondary);
             line-height: 1;
-            text-shadow: 2px 2px 0 var(--team-secondary), 4px 4px 0 rgba(0, 0, 0, 0.1);
-            transform: skewY(-3deg);
+            text-shadow: 2px 2px 0px rgba(255,255,255,1), 4px 4px 0 rgba(0,0,0,0.1);
         }
 
         .hero-desc {
-            font-size: 1.6rem;
-            color: #1A1A1A;
-            margin-bottom: 20px;
+            font-size: 1.5rem;
+            color: #333;
             font-weight: 900;
-            letter-spacing: 1px;
-            position: relative;
-            z-index: 1;
+            margin-bottom: 20px;
         }
 
+        /* --- 建議網格 --- */
         .advice-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 12px;
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 3px dashed var(--team-primary);
+            border-top: 2px dashed #ddd;
             position: relative;
             z-index: 1;
         }
 
         .advice-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
-            padding: 15px 10px;
-            border-radius: 15px;
-            border: 2px solid var(--team-primary);
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
-        .advice-item:hover {
-            transform: translateY(-3px);
+        .advice-label {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 4px;
         }
 
-        .advice-icon {
-            font-size: 2.5rem;
-            margin-bottom: 8px;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-        }
-
-        .advice-text {
-            font-size: 1.3rem;
+        .advice-value {
+            font-size: 1.1rem;
             font-weight: 900;
-            color: var(--team-primary);
-            margin: 5px 0;
-            line-height: 1.2;
-            letter-spacing: 0.5px;
+            color: var(--team-secondary);
         }
 
-        .advice-subtext {
+        .advice-sub {
             font-size: 0.75rem;
-            color: #666;
+            color: var(--team-primary);
             font-weight: bold;
+            margin-top: 3px;
         }
 
+        /* --- 稍後預報卡片 (CSS 修復重點) --- */
         .section-title {
-            font-size: 1.4rem;
-            color: var(--team-primary);
+            font-size: 1.2rem;
+            color: white;
             margin-bottom: 15px;
-            margin-left: 10px;
+            margin-left: 5px;
             font-weight: 900;
-            text-shadow: 2px 2px 0 var(--team-secondary), 4px 4px 0 rgba(0, 0, 0, 0.2);
-            letter-spacing: 2px;
-            transform: skewX(-3deg);
-            display: inline-block;
-            padding: 8px 15px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            border-left: 5px solid var(--team-primary);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title::before {
+            content: '';
+            display: block;
+            width: 5px;
+            height: 20px;
+            background: var(--team-primary);
+            border-radius: 2px;
+            box-shadow: 0 0 5px rgba(255,255,255,0.5);
         }
 
         .scroll-container {
             display: flex;
             overflow-x: auto;
-            gap: 15px;
+            gap: 12px;
             padding-bottom: 15px;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+            scrollbar-width: none; /* Firefox */
         }
-
+        
         .scroll-container::-webkit-scrollbar {
-            display: none;
+            display: none; /* Chrome/Safari */
         }
 
         .mini-card {
-            min-width: 150px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
-            border-radius: 20px;
-            padding: 20px 15px;
+            min-width: 140px;
+            background: linear-gradient(to bottom, #fff, #f8f9fa);
+            border-radius: 18px;
+            padding: 15px 10px;
             text-align: center;
             border: 3px solid var(--team-primary);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             flex-shrink: 0;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             position: relative;
-            overflow: hidden;
         }
 
-        .mini-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: var(--team-primary);
-        }
-
+        /* ★★★ 重點修正區：字體顏色 ★★★ */
         .mini-time {
-            background: var(--team-secondary);
-            color: var(--team-primary);
-            padding: 5px 12px;
-            border-radius: 12px;
+            background: var(--team-secondary); /* 隊伍副色 */
+            color: #ffffff !important;         /* 強制白色文字 */
+            padding: 4px 12px;
+            border-radius: 20px;
             font-size: 0.85rem;
             display: inline-block;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             font-weight: 900;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            letter-spacing: 1px;
+            /* 增加文字陰影，確保在任何背景都清晰 */
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); 
+            /* 增加邊框讓它更像標籤 */
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .mini-icon {
-            font-size: 3rem;
-            margin: 8px 0;
-            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.15));
+            font-size: 2.5rem;
+            margin: 5px 0;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
         }
 
         .mini-temp {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: 900;
-            color: var(--team-primary);
-            letter-spacing: 0.5px;
+            color: var(--team-secondary);
+            /* 增加白色描邊效果 */
+            text-shadow: 2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+            margin: 5px 0;
         }
 
         .mini-rain {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #4A90E2;
-            margin-top: 8px;
             font-weight: bold;
+            background: rgba(74, 144, 226, 0.1);
+            padding: 3px 8px;
+            border-radius: 10px;
+            display: inline-block;
         }
 
+        /* --- Loading & Toast --- */
         .loading-screen {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, #002D62 0%, #003D79 100%);
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 999;
+            transition: opacity 0.3s;
         }
 
         .loading-icon {
-            font-size: 5rem;
-            animation: spin 2s linear infinite;
-            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+            font-size: 4rem;
+            animation: spin 1s linear infinite;
         }
+        
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            z-index: 200;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
         }
+        .toast.show { opacity: 1; }
 
-        .loading-text {
-            color: #FFB81C;
-            font-weight: 900;
-            margin-top: 25px;
-            font-size: 1.3rem;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
     </style>
 </head>
 
 <body class="brothers">
+    
     <div id="loading" class="loading-screen">
         <div class="loading-icon">⚾</div>
-        <p class="loading-text">小張正在觀測氣象中...</p>
+        <div style="color:white; margin-top:15px; font-weight:bold;">氣象觀測中...</div>
     </div>
+
+    <div id="toast" class="toast">已複製戰報！</div>
 
     <div class="status-bar">
         <div class="location-pill" id="locationPill">📍 臺中</div>
-        <div id="updateTime" class="update-pill">更新中...</div>
+        <button id="shareBtn" class="share-btn">📋 複製戰報</button>
     </div>
 
     <div class="container" id="mainContent" style="display: none;">
         <div class="app-title">
-            <h1>⚾ 小張報氣象 ⚾</h1>
-            <div class="app-subtitle">WEATHER FORECAST · CPBL STYLE</div>
+            <h1>小張報氣象</h1>
+            <div class="app-subtitle">CPBL WEATHER REPORT</div>
         </div>
 
         <div class="team-selector">
-            <button class="team-btn active" data-team="brothers">🐘 中信兄弟</button>
-            <button class="team-btn" data-team="lions">🦁 統一獅</button>
-            <button class="team-btn" data-team="monkeys">🐵 樂天桃猿</button>
-            <button class="team-btn" data-team="guardians">🛡️ 富邦悍將</button>
-            <button class="team-btn" data-team="dragons">🐉 味全龍</button>
-            <button class="team-btn" data-team="hawks">🦅 台鋼雄鷹</button>
+            <div class="team-btn active" data-team="brothers">🐘 兄弟</div>
+            <div class="team-btn" data-team="lions">🦁 統一</div>
+            <div class="team-btn" data-team="monkeys">🐵 樂天</div>
+            <div class="team-btn" data-team="guardians">🛡️ 富邦</div>
+            <div class="team-btn" data-team="dragons">🐉 味全</div>
+            <div class="team-btn" data-team="hawks">🦅 台鋼</div>
         </div>
 
-        <div id="heroCard"></div>
+        <div id="heroCard">
+            </div>
 
-        <h3 class="section-title">📋 稍後預報</h3>
-        <div class="scroll-container" id="futureForecasts"></div>
+        <h3 class="section-title">未來 36 小時預報</h3>
+        <div class="scroll-container" id="futureForecasts">
+            </div>
     </div>
 
     <script>
+        // --- 設定檔 ---
         const TEAMS = {
-            brothers: {
-                name: '中信兄弟',
-                city: 'kaohsiung',
-                cityName: '臺中',
-                emoji: '🐘',
-                primary: '#FFB81C',
-                secondary: '#002D62',
-                text: '#002D62'
+            brothers: { name: '中信兄弟', city: 'taichung', cityName: '臺中', emoji: '🐘', primary: '#FFB81C', secondary: '#002D62', text: '#002D62' },
+            lions: { name: '統一獅', city: 'tainan', cityName: '臺南', emoji: '🦁', primary: '#FF6600', secondary: '#1A1A1A', text: '#FFFFFF' },
+            monkeys: { name: '樂天桃猿', city: 'taoyuan', cityName: '桃園', emoji: '🐵', primary: '#C8102E', secondary: '#8B1538', text: '#FFFFFF' },
+            guardians: { name: '富邦悍將', city: 'new_taipei', cityName: '新北', emoji: '🛡️', primary: '#0055B8', secondary: '#003087', text: '#FFFFFF' },
+            dragons: { name: '味全龍', city: 'taipei', cityName: '臺北', emoji: '🐉', primary: '#E4002B', secondary: '#C8102E', text: '#FFFFFF' },
+            hawks: { name: '台鋼雄鷹', city: 'kaohsiung', cityName: '高雄', emoji: '🦅', primary: '#00695C', secondary: '#004D40', text: '#FFFFFF' }
+        };
+
+        // --- 快取管理 (Optimization: Caching) ---
+        const CACHE_KEY_PREFIX = 'cpbl_weather_';
+        const CACHE_DURATION = 1000 * 60 * 30; // 30 分鐘快取
+
+        const CacheManager = {
+            get: (city) => {
+                const raw = localStorage.getItem(CACHE_KEY_PREFIX + city);
+                if (!raw) return null;
+                const data = JSON.parse(raw);
+                if (Date.now() - data.timestamp > CACHE_DURATION) return null;
+                return data.payload;
             },
-            lions: {
-                name: '統一獅',
-                city: 'kaohsiung',
-                cityName: '臺南',
-                emoji: '🦁',
-                primary: '#FF6600',
-                secondary: '#1A1A1A',
-                text: '#FFFFFF'
-            },
-            monkeys: {
-                name: '樂天桃猿',
-                city: 'kaohsiung',
-                cityName: '桃園',
-                emoji: '🐵',
-                primary: '#C8102E',
-                secondary: '#8B1538',
-                text: '#FFFFFF'
-            },
-            guardians: {
-                name: '富邦悍將',
-                city: 'kaohsiung',
-                cityName: '新北',
-                emoji: '🛡️',
-                primary: '#0055B8',
-                secondary: '#003087',
-                text: '#FFFFFF'
-            },
-            dragons: {
-                name: '味全龍',
-                city: 'kaohsiung',
-                cityName: '臺北',
-                emoji: '🐉',
-                primary: '#E4002B',
-                secondary: '#C8102E',
-                text: '#FFFFFF'
-            },
-            hawks: {
-                name: '台鋼雄鷹',
-                city: 'kaohsiung',
-                cityName: '高雄',
-                emoji: '🦅',
-                primary: '#00695C',
-                secondary: '#004D40',
-                text: '#FFFFFF'
+            set: (city, payload) => {
+                const data = { timestamp: Date.now(), payload: payload };
+                localStorage.setItem(CACHE_KEY_PREFIX + city, JSON.stringify(data));
             }
         };
 
         let currentTeam = 'brothers';
+        let currentWeatherData = null; // 用於分享功能
 
+        // --- 主題切換 ---
         function setTeamTheme(teamId) {
             const team = TEAMS[teamId];
             document.body.className = teamId;
@@ -515,53 +516,35 @@
             localStorage.setItem('selectedTeam', teamId);
         }
 
+        // --- 輔助函式 ---
         function getWeatherIcon(weather) {
             if (!weather) return "🌤️";
-            if (weather.includes("晴")) return "☀️";
-            if (weather.includes("多雲")) return "⛅";
-            if (weather.includes("陰")) return "☁️";
-            if (weather.includes("雨")) return "🌧️";
+            if (weather.includes("雨") || weather.includes("陣雨")) return "🌧️";
             if (weather.includes("雷")) return "⛈️";
+            if (weather.includes("陰")) return "☁️";
+            if (weather.includes("多雲")) return "⛅";
+            if (weather.includes("晴")) return "☀️";
             return "🌤️";
         }
 
-        function getAdvice(rainProb, maxTemp) {
-            let rainIcon = "🌂";
-            let rainText = "不用帶傘";
-            if (parseInt(rainProb) > 30) {
-                rainIcon = "☂️";
-                rainText = "記得帶傘！";
+        // 優化：棒球專屬邏輯 (延賽指數)
+        function getBaseballAnalysis(rainProb) {
+            const rain = parseInt(rainProb);
+            let delayRisk = "低風險";
+            let delayClass = "good";
+            let msg = "比賽應能順利進行";
+
+            if (rain >= 70) {
+                delayRisk = "極高風險";
+                delayClass = "bad";
+                msg = "建議關注聯盟延賽公告";
+            } else if (rain >= 40) {
+                delayRisk = "中度風險";
+                delayClass = "warn";
+                msg = "可能會打打停停";
             }
 
-            let clothIcon = "👕";
-            let clothText = "舒適穿搭";
-            let tempAdvice = "";
-            
-            const temp = parseInt(maxTemp);
-            
-            if (temp >= 33) {
-                clothIcon = "🎽";
-                clothText = "超熱！背心上場";
-                tempAdvice = "記得補充水分";
-            } else if (temp >= 28) {
-                clothIcon = "👕";
-                clothText = "短袖出發";
-                tempAdvice = "適合戶外活動";
-            } else if (temp >= 23) {
-                clothIcon = "👔";
-                clothText = "長袖剛剛好";
-                tempAdvice = "舒適宜人";
-            } else if (temp >= 18) {
-                clothIcon = "🧥";
-                clothText = "薄外套備著";
-                tempAdvice = "早晚溫差大";
-            } else {
-                clothIcon = "🧥";
-                clothText = "厚外套必備";
-                tempAdvice = "注意保暖";
-            }
-
-            return { rainIcon, rainText, clothIcon, clothText, tempAdvice };
+            return { delayRisk, delayClass, msg };
         }
 
         function getTimePeriod(startTime) {
@@ -573,18 +556,24 @@
             return "深夜";
         }
 
+        // --- 渲染畫面 ---
         function renderWeather(data) {
+            currentWeatherData = data;
             const forecasts = data.forecasts;
             const current = forecasts[0];
             const others = forecasts.slice(1);
 
-            const advice = getAdvice(current.rain, current.maxTemp);
+            const analysis = getBaseballAnalysis(current.rain);
             const period = getTimePeriod(current.startTime);
             const avgTemp = Math.round((parseInt(current.maxTemp) + parseInt(current.minTemp)) / 2);
 
+            // 主卡片渲染
             document.getElementById('heroCard').innerHTML = `
                 <div class="hero-card">
-                    <div class="hero-period">${period}</div>
+                    <div class="status-badge ${analysis.delayClass === 'good' ? 'good' : ''}" style="display:block">
+                        ☔ 延賽機率：${analysis.delayRisk}
+                    </div>
+                    <div class="hero-period">${period}的天氣</div>
                     <div class="hero-temp-container">
                         <div class="hero-icon">${getWeatherIcon(current.weather)}</div>
                         <div class="hero-temp">${avgTemp}°</div>
@@ -593,22 +582,22 @@
                     
                     <div class="advice-grid">
                         <div class="advice-item">
-                            <div class="advice-icon">${advice.rainIcon}</div>
-                            <div class="advice-text">${advice.rainText}</div>
-                            <div class="advice-subtext">降雨機率 ${current.rain}</div>
+                            <div class="advice-label">降雨機率</div>
+                            <div class="advice-value">${current.rain}%</div>
+                            <div class="advice-sub">${analysis.msg}</div>
                         </div>
                         <div class="advice-item">
-                            <div class="advice-icon">${advice.clothIcon}</div>
-                            <div class="advice-text">${advice.clothText}</div>
-                            <div class="advice-subtext">${advice.tempAdvice}</div>
+                            <div class="advice-label">氣溫區間</div>
+                            <div class="advice-value">${current.minTemp}°-${current.maxTemp}°</div>
+                            <div class="advice-sub">注意溫差</div>
                         </div>
                     </div>
                 </div>
             `;
 
+            // 稍後預報渲染
             const scrollContainer = document.getElementById('futureForecasts');
             scrollContainer.innerHTML = '';
-
             const todayDate = new Date().getDate();
 
             others.forEach(f => {
@@ -622,51 +611,99 @@
                     <div class="mini-card">
                         <div class="mini-time">${p}</div>
                         <div class="mini-icon">${getWeatherIcon(f.weather)}</div>
-                        <div class="mini-temp">${f.minTemp}° - ${f.maxTemp}°</div>
-                        <div class="mini-rain">💧 ${f.rain}</div>
+                        <div class="mini-temp">${f.minTemp}°-${f.maxTemp}°</div>
+                        <div class="mini-rain">💧 ${f.rain}%</div>
                     </div>
                 `;
             });
-
-            const now = new Date();
-            const month = now.getMonth() + 1;
-            const date = now.getDate();
-            const dayIndex = now.getDay();
-            const days = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
-
-            document.getElementById('updateTime').textContent = `${month}月${date}日 ${days[dayIndex]}`;
         }
 
+        // --- 資料抓取 ---
         async function fetchWeather(city) {
+            document.getElementById('loading').style.display = 'flex';
+            
+            // 1. 檢查快取
+            const cachedData = CacheManager.get(city);
+            if (cachedData) {
+                renderWeather(cachedData);
+                finishLoading();
+                return;
+            }
+
+            // 2. 無快取則呼叫 API
             try {
+                // 注意：這裡使用假定的 API 路徑，若原 API city mapping 有不同需自行調整
+                // 為了範例通用性，將 city 轉為 API 可能接受的格式 (原程式碼的邏輯)
+                // 由於 zeabur API 似乎是用英文城市名，這裡做個簡單 mapping 或直接用
+                // 修正：原程式碼 TEAMS 裡的 city 是 kaohsiung 等，這裡為了演示維持不變，
+                // 但為了精確度，富邦應該是 new_taipei，樂天是 taoyuan
+                
                 const API_URL = `https://weather-cpbl.zeabur.app/api/weather/${city}`;
-                const delayPromise = new Promise(resolve => setTimeout(resolve, 1000));
-                const fetchPromise = fetch(API_URL).then(res => res.json());
-                const [_, json] = await Promise.all([delayPromise, fetchPromise]);
+                const res = await fetch(API_URL);
+                const json = await res.json();
 
                 if (json.success) {
+                    CacheManager.set(city, json.data);
                     renderWeather(json.data);
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('mainContent').style.display = 'block';
                 } else {
-                    throw new Error("API Error");
+                    throw new Error("API Fail");
                 }
             } catch (e) {
                 console.error(e);
-                alert("天氣資料讀取失敗,請稍後再試!");
+                alert("無法取得天氣資料，可能是 API 限制或網路問題");
+            } finally {
+                finishLoading();
             }
         }
 
+        function finishLoading() {
+            // 延遲一點點讓畫面更順暢
+            setTimeout(() => {
+                document.getElementById('loading').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('loading').style.opacity = '1';
+                }, 300);
+                document.getElementById('mainContent').style.display = 'block';
+            }, 500);
+        }
+
+        // --- 分享功能 (純文字戰報) ---
+        document.getElementById('shareBtn').addEventListener('click', () => {
+            if(!currentWeatherData) return;
+            
+            const team = TEAMS[currentTeam];
+            const f = currentWeatherData.forecasts[0];
+            
+            const text = `
+⚾【${team.name}】球迷天氣戰報 ⚾
+📍 地點：${team.cityName}主場
+📅 時間：${getTimePeriod(f.startTime)}
+🌡️ 氣溫：${f.minTemp}° - ${f.maxTemp}°
+☁️ 天氣：${f.weather}
+☔ 降雨機率：${f.rain}%
+
+#CPBL #小張報氣象 #${team.name}
+            `.trim();
+
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
+            });
+        });
+
+        // --- 事件監聽 ---
         document.querySelectorAll('.team-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const teamId = btn.dataset.team;
+                if(teamId === currentTeam) return;
                 setTeamTheme(teamId);
-                document.getElementById('loading').style.display = 'flex';
-                document.getElementById('mainContent').style.display = 'none';
                 fetchWeather(TEAMS[teamId].city);
             });
         });
 
+        // --- 初始化 ---
         document.addEventListener("DOMContentLoaded", () => {
             const savedTeam = localStorage.getItem('selectedTeam') || 'brothers';
             setTeamTheme(savedTeam);
@@ -674,5 +711,4 @@
         });
     </script>
 </body>
-
 </html>
