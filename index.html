@@ -3,9 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<title>小張報氣象 - 中職跪棒全隊版</title>
-<link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23FFB81C'/><circle cx='35' cy='35' r='18' fill='white' stroke='%23002D62' stroke-width='3'/><line x1='35' y1='22' x2='35' y2='48' stroke='%23002D62' stroke-width='2'/><line x1='30' y1='27' x2='35' y2='22' stroke='%23002D62' stroke-width='2'/><line x1='40' y1='27' x2='35' y2='22' stroke='%23002D62' stroke-width='2'/><line x1='30' y1='35' x2='35' y2='30' stroke='%23002D62' stroke-width='2'/><line x1='40' y1='35' x2='35' y2='30' stroke='%23002D62' stroke-width='2'/><path d='M55 45 Q70 35 75 50 Q72 60 60 62 Q50 63 55 50' fill='%235B9BD5' stroke='%23002D62' stroke-width='2'/><circle cx='80' cy='25' r='8' fill='none' stroke='%23FFD700' stroke-width='2'/><line x1='80' y1='15' x2='80' y2='12' stroke='%23FFD700' stroke-width='2'/><line x1='88' y1='25' x2='91' y2='25' stroke='%23FFD700' stroke-width='2'/><line x1='85' y1='18' x2='87' y2='16' stroke='%23FFD700' stroke-width='2'/><path d='M65 65 L60 85 L68 75 L62 75 L67 65 Z' fill='%23FFD700' stroke='%23002D62' stroke-width='2'/></svg>">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23FFB81C'/><circle cx='35' cy='35' r='18' fill='white' stroke='%23002D62' stroke-width='3'/><line x1='35' y1='22' x2='35' y2='48' stroke='%23002D62' stroke-width='2'/><line x1='30' y1='27' x2='35' y2='22' stroke='%23002D62' stroke-width='2'/><line x1='40' y1='27' x2='35' y2='22' stroke='%23002D62' stroke-width='2'/><line x1='30' y1='35' x2='35' y2='30' stroke='%23002D62' stroke-width='2'/><line x1='40' y1='35' x2='35' y2='30' stroke='%23002D62' stroke-width='2'/><path d='M55 45 Q70 35 75 50 Q72 60 60 62 Q50 63 55 50' fill='%235B9BD5' stroke='%23002D62' stroke-width='2'/><circle cx='80' cy='25' r='8' fill='none' stroke='%23FFD700' stroke-width='2'/><line x1='80' y1='15' x2='80' y2='12' stroke='%23FFD700' stroke-width='2'/><line x1='88' y1='25' x2='91' y2='25' stroke='%23FFD700' stroke-width='2'/><line x1='85' y1='18' x2='87' y2='16' stroke='%23FFD700' stroke-width='2'/><path d='M65 65 L60 85 L68 75 L62 75 L67 65 Z' fill='%23FFD700' stroke='%23002D62' stroke-width='2'/></svg>">
+<title>小張報氣象 - 中職全隊版</title>
+<link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23FFB81C'/><circle cx='35' cy='35' r='18' fill='white' stroke='%23002D62' stroke-width='3'/><line x1='35' y1='22' x2='35' y2='48' stroke='%23002D62' stroke-width='2'/><line x1='30' y1='27' x2='35' y2='22' stroke='%23002D62' stroke-width='2'/><line x1='40' y1='27' x2='35' y2='22' stroke='%23002D62' stroke-width='2'/><line x1='30' y1='35' x2='35' y2='30' stroke='%23002D62' stroke-width='2'/><line x1='40' y1='35' x2='35' y2='30' stroke='%23002D62' stroke-width='2'/><path d='M55 45 Q70 35 75 50 Q72 60 60 62 Q50 63 55 50' fill='%235B9BD5' stroke='%23002D62' stroke-width='2'/><circle cx='80' cy='25' r='8' fill='none' stroke='%23FFD700' stroke-width='2'/><path d='M65 65 L60 85 L68 75 L62 75 L67 65 Z' fill='%23FFD700' stroke='%23002D62' stroke-width='2'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
@@ -543,14 +542,8 @@ footer a {
 .clothing-item:nth-child(4) { animation-delay: 0.25s; }
 
 @keyframes popIn {
-    from {
-        opacity: 0;
-        transform: scale(0.5);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+    from { opacity: 0; transform: scale(0.5); }
+    to { opacity: 1; transform: scale(1); }
 }
 
 .clothing-item:hover {
@@ -632,13 +625,13 @@ footer a {
 
 <main id="appRoot" style="display: none;">
     <div class="app-title">
-        <h1>小張報氣象:<span id="currentTeamEmoji"></span><span id="currentTeamCity">臺中市</span></h1>
+        <h1>小張報氣象: <span id="currentTeamEmoji"></span> <span id="currentTeamCity">臺中市</span></h1>
         <div class="team-name-badge" id="teamNameBadge">中信兄弟</div>
-        <button class="favorite-btn" id="favoriteBtn" title="設為預設球隊">⭐</button>
+        <button class="favorite-btn" id="favoriteBtn" title="設為預設球隊">☆</button>
     </div>
 
     <div class="hero-card">
-        <div class="hero-icon" id="heroIcon">☀️</div>
+        <div class="hero-icon" id="heroIcon">☀</div>
         <div class="hero-temp" id="heroTemp">28°</div>
         <div class="hero-weather-desc" id="heroWeatherDesc">多雲時晴</div>
         <div class="hero-minmax-temp" id="heroMinMaxTemp">最低 24° / 最高 32°</div>
@@ -657,7 +650,7 @@ footer a {
         <div class="advice-icon" id="adviceIcon">👕</div>
         <div class="advice-content">
             <h3 id="adviceTitle">舒適宜人</h3>
-            <p id="adviceText">天氣溫和,可自由選擇舒適的穿著。</p>
+            <p id="adviceText">天氣溫和,可自由選擇舒適的穿著 ｡ </p>
         </div>
     </div>
 
@@ -666,8 +659,7 @@ footer a {
     <div class="meta-info">
         <span id="updateTime">更新時間:載入中</span>
         <button class="refresh-btn" id="refreshBtn">
-            <span>↻</span>
-            重新整理
+            <span>↻</span> 重新整理
         </button>
     </div>
 </main>
@@ -680,28 +672,19 @@ footer a {
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <script>
-const API_BASE_URL = 'http://localhost:3000';
+/* ========= 配置 ========= */
+// 指向你的 API 根：注意此處不包含尾部 slash，fetch 時會接上 /{city}
+const API_BASE_URL = 'https://weather-cpbl.zeabur.app/api/weather';
 const STORAGE_KEY = 'favorite_team';
 
+/* ========= 球隊資料 ========= */
 const TEAMS = [
-    { id: 'brothers', name: '中信兄弟', city: '臺中市', cityKey: 'taichung', emoji: '🐘', 
-      gradient: 'linear-gradient(135deg, #FFB81C 0%, #002D62 100%)',
-      primary: '#FFB81C', secondary: '#002D62' },
-    { id: 'monkeys', name: '樂天桃猿', city: '桃園市', cityKey: 'taoyuan', emoji: '🐵', 
-      gradient: 'linear-gradient(135deg, #D50A20 0%, #8B0000 100%)',
-      primary: '#D50A20', secondary: '#8B0000' },
-    { id: 'lions', name: '統一獅', city: '臺南市', cityKey: 'tainan', emoji: '🦁', 
-      gradient: 'linear-gradient(135deg, #FF7700 0%, #00548E 100%)',
-      primary: '#FF7700', secondary: '#00548E' },
-    { id: 'guards', name: '富邦悍將', city: '新北市', cityKey: 'newtaipei', emoji: '🔱', 
-      gradient: 'linear-gradient(135deg, #0070A0 0%, #E6004C 100%)',
-      primary: '#0070A0', secondary: '#E6004C' },
-    { id: 'dragons', name: '味全龍', city: '臺北市', cityKey: 'taipei', emoji: '🐉', 
-      gradient: 'linear-gradient(135deg, #E3002C 0%, #000000 100%)',
-      primary: '#E3002C', secondary: '#000000' },
-    { id: 'hawkes', name: '台鋼雄鷹', city: '高雄市', cityKey: 'kaohsiung', emoji: '🦅', 
-      gradient: 'linear-gradient(135deg, #1E4936 0%, #6B8E23 100%)',
-      primary: '#1E4936', secondary: '#6B8E23' },
+    { id: 'brothers', name: '中信兄弟', city: '臺中市', cityKey: 'taichung', emoji: '🐘', gradient: 'linear-gradient(135deg, #FFB81C 0%, #002D62 100%)', primary: '#FFB81C', secondary: '#002D62' },
+    { id: 'monkeys', name: '樂天桃猿', city: '桃園市', cityKey: 'taoyuan', emoji: '🐵', gradient: 'linear-gradient(135deg, #D50A20 0%, #8B0000 100%)', primary: '#D50A20', secondary: '#8B0000' },
+    { id: 'lions', name: '統一獅', city: '臺南市', cityKey: 'tainan', emoji: '🦁', gradient: 'linear-gradient(135deg, #FF7700 0%, #00548E 100%)', primary: '#FF7700', secondary: '#00548E' },
+    { id: 'guards', name: '富邦悍將', city: '新北市', cityKey: 'newtaipei', emoji: '🔱', gradient: 'linear-gradient(135deg, #0070A0 0%, #E6004C 100%)', primary: '#0070A0', secondary: '#E6004C' },
+    { id: 'dragons', name: '味全龍', city: '臺北市', cityKey: 'taipei', emoji: '🐉', gradient: 'linear-gradient(135deg, #E3002C 0%, #000000 100%)', primary: '#E3002C', secondary: '#000000' },
+    { id: 'hawkes', name: '台鋼雄鷹', city: '高雄市', cityKey: 'kaohsiung', emoji: '🦅', gradient: 'linear-gradient(135deg, #1E4936 0%, #6B8E23 100%)', primary: '#1E4936', secondary: '#6B8E23' },
 ];
 
 let currentTeam = 0;
@@ -710,7 +693,7 @@ let canvas, ctx;
 let weatherCache = {};
 let tempChart = null;
 
-// Canvas 粒子背景
+/* ========= 粒子背景 ========= */
 function initParticles() {
     canvas = document.getElementById('particleCanvas');
     ctx = canvas.getContext('2d');
@@ -732,14 +715,17 @@ function initParticles() {
 }
 
 function animateParticles() {
+    if (!ctx) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
+
     particles.forEach(p => {
         p.x += p.vx;
         p.y += p.vy;
 
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+        if (p.x < -50) p.x = canvas.width + 50;
+        if (p.x > canvas.width + 50) p.x = -50;
+        if (p.y < -50) p.y = canvas.height + 50;
+        if (p.y > canvas.height + 50) p.y = -50;
 
         ctx.font = `${p.size}px Arial`;
         ctx.fillText(p.emoji, p.x, p.y);
@@ -749,10 +735,13 @@ function animateParticles() {
 }
 
 window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    if (canvas) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
 });
 
+/* ========= UI 小工具 ========= */
 function showToast(msg, type = 'info', duration = 3000) {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
@@ -770,43 +759,45 @@ function showLoading(show) {
     document.getElementById('loading').style.display = show ? 'flex' : 'none';
 }
 
-function getEmoji(desc) {
-    if (desc.includes('雨')) return '🌧️';
-    if (desc.includes('雷')) return '⛈️';
-    if (desc.includes('晴')) return '☀️';
-    if (desc.includes('雲')) return '☁️';
-    if (desc.includes('陰')) return '☁️';
-    if (desc.includes('霧')) return '🌫️';
+/* ========= 天氣與建議邏輯 ========= */
+function getEmoji(desc = '') {
+    if (desc.includes('雷')) return '⛈';
+    if (desc.includes('雨')) return '🌧';
+    if (desc.includes('晴')) return '☀';
+    if (desc.includes('雲')) return '☁';
+    if (desc.includes('陰')) return '☁';
+    if (desc.includes('霧')) return '🌫';
     return '❓';
 }
 
-function getAdvice(weather, comfort) {
-    if (weather.includes('雷')) return { title: '雷雨警報', text: '請避免戶外活動,並攜帶雨具。', icon: '⛈️' };
-    if (weather.includes('大雨')) return { title: '大雨特報', text: '請注意路面積水,建議穿著雨衣和防水鞋。', icon: '☔' };
-    if (weather.includes('雨')) return { title: '記得帶傘', text: '今日有降雨機會,外出請攜帶雨具。', icon: '🌂' };
-    if (weather.includes('晴')) return { title: '陽光普照', text: '紫外線強,請做好防曬,建議穿著輕薄透氣衣物。', icon: '😎' };
-    if (comfort && comfort.includes('寒冷')) return { title: '注意保暖', text: '天氣較冷,建議多穿一件外套。', icon: '🧥' };
-    if (comfort && comfort.includes('悶熱')) return { title: '注意防暑', text: '天氣悶熱,請多補充水分,避免中暑。', icon: '💧' };
-    return { title: '舒適宜人', text: '天氣溫和,可自由選擇舒適的穿著。', icon: '👕' };
+function getAdvice(weather = '', comfort = '') {
+    if (!weather && !comfort) return { title: '舒適宜人', text: '天氣溫和,可自由選擇舒適的穿著 ｡ ', icon: '👕' };
+    if (weather.includes('雷')) return { title: '雷雨警報', text: '請避免戶外活動,並攜帶雨具 ｡ ', icon: '⛈' };
+    if (weather.includes('大雨')) return { title: '大雨特報', text: '請注意路面積水,建議穿著雨衣和防水鞋 ｡ ', icon: '☔' };
+    if (weather.includes('雨')) return { title: '記得帶傘', text: '今日有降雨機會,外出請攜帶雨具 ｡ ', icon: '🌂' };
+    if (weather.includes('晴')) return { title: '陽光普照', text: '紫外線強,請做好防曬,建議穿著輕薄透氣衣物 ｡ ', icon: '😎' };
+    if (comfort.includes('寒冷')) return { title: '注意保暖', text: '天氣較冷,建議多穿一件外套 ｡ ', icon: '🧥' };
+    if (comfort.includes('悶熱')) return { title: '注意防暑', text: '天氣悶熱,請多補充水分,避免中暑 ｡ ', icon: '💧' };
+    return { title: '舒適宜人', text: '天氣溫和,可自由選擇舒適的穿著 ｡ ', icon: '👕' };
 }
 
-// 天氣動畫效果
-function createWeatherEffect(weather) {
+/* 天氣效果 */
+function createWeatherEffect(weather = '') {
     const container = document.getElementById('weatherEffects');
     container.innerHTML = '';
 
+    if (!weather) return;
+
     if (weather.includes('雨')) {
-        // 雨滴效果
         for (let i = 0; i < 50; i++) {
             const drop = document.createElement('div');
             drop.className = 'raindrop';
-            drop.style.left = Math.random() * 100 + '%';
+            drop.style.left = (Math.random() * 100) + '%';
             drop.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
-            drop.style.animationDelay = Math.random() * 2 + 's';
+            drop.style.animationDelay = (Math.random() * 2) + 's';
             container.appendChild(drop);
         }
     } else if (weather.includes('晴')) {
-        // 陽光效果
         for (let i = 0; i < 10; i++) {
             const ray = document.createElement('div');
             ray.className = 'sunray';
@@ -817,7 +808,6 @@ function createWeatherEffect(weather) {
             container.appendChild(ray);
         }
     } else if (weather.includes('雲') || weather.includes('陰')) {
-        // 雲朵效果
         for (let i = 0; i < 5; i++) {
             const cloud = document.createElement('div');
             cloud.className = 'cloud';
@@ -831,10 +821,12 @@ function createWeatherEffect(weather) {
     }
 }
 
-// 穿搭建議
-function getClothingSuggestions(temp, weather) {
+/* 穿搭建議 */
+function getClothingSuggestions(temp, weather = '') {
     const suggestions = [];
     const avgTemp = typeof temp === 'number' ? temp : parseInt(temp);
+
+    if (!isFinite(avgTemp)) return [];
 
     if (avgTemp < 15) {
         suggestions.push({ icon: '🧥', label: '厚外套' });
@@ -856,13 +848,8 @@ function getClothingSuggestions(temp, weather) {
         suggestions.push({ icon: '🧢', label: '遮陽帽' });
     }
 
-    if (weather.includes('雨')) {
-        suggestions.push({ icon: '☂️', label: '雨傘' });
-    }
-
-    if (weather.includes('晴')) {
-        suggestions.push({ icon: '🕶️', label: '太陽眼鏡' });
-    }
+    if (weather.includes('雨')) suggestions.push({ icon: '☂', label: '雨具' });
+    if (weather.includes('晴')) suggestions.push({ icon: '🕶', label: '太陽眼鏡' });
 
     return suggestions.slice(0, 4);
 }
@@ -870,7 +857,6 @@ function getClothingSuggestions(temp, weather) {
 function renderClothingSuggestions(temp, weather) {
     const container = document.getElementById('clothingSuggestions');
     const suggestions = getClothingSuggestions(temp, weather);
-    
     container.innerHTML = suggestions.map((item, idx) => `
         <div class="clothing-item" style="animation-delay: ${idx * 0.05}s">
             <div class="clothing-icon">${item.icon}</div>
@@ -879,19 +865,24 @@ function renderClothingSuggestions(temp, weather) {
     `).join('');
 }
 
-// 溫度趨勢圖
+/* ========= 溫度趨勢圖 ========= */
 function createTempChart(forecasts) {
     const ctx = document.getElementById('tempChart');
-    if (!ctx) return;
+    if (!ctx || !forecasts) return;
 
+    // labels: 時間 (HH:00)
     const labels = forecasts.map(f => formatTime(f.startTime).split(' ')[1]);
-    const temps = forecasts.map(f => Math.round((parseInt(f.minTemp) + parseInt(f.maxTemp)) / 2));
-    
+    // 平均溫度
+    const temps = forecasts.map(f => {
+        const minT = parseInt(f.minTemp);
+        const maxT = parseInt(f.maxTemp);
+        if (isFinite(minT) && isFinite(maxT)) return Math.round((minT + maxT) / 2);
+        return NaN;
+    });
+
     const team = TEAMS[currentTeam];
-    
-    if (tempChart) {
-        tempChart.destroy();
-    }
+
+    if (tempChart) tempChart.destroy();
 
     tempChart = new Chart(ctx, {
         type: 'line',
@@ -916,9 +907,7 @@ function createTempChart(forecasts) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: {
-                    display: false
-                },
+                legend: { display: false },
                 tooltip: {
                     backgroundColor: 'rgba(0, 0, 0, 0.8)',
                     titleColor: 'white',
@@ -926,9 +915,7 @@ function createTempChart(forecasts) {
                     padding: 12,
                     displayColors: false,
                     callbacks: {
-                        label: function(context) {
-                            return context.parsed.y + '°C';
-                        }
+                        label: function(context) { return (context.parsed.y || '') + '°C'; }
                     }
                 }
             },
@@ -936,38 +923,21 @@ function createTempChart(forecasts) {
                 y: {
                     ticks: {
                         color: 'rgba(255, 255, 255, 0.9)',
-                        font: {
-                            size: 12,
-                            weight: 'bold'
-                        },
-                        callback: function(value) {
-                            return value + '°';
-                        }
+                        font: { size: 12, weight: 'bold' },
+                        callback: function(value) { return value + '°'; }
                     },
-                    grid: {
-                        color: 'rgba(255, 255, 255, 0.2)',
-                        drawBorder: false
-                    }
+                    grid: { color: 'rgba(255, 255, 255, 0.2)', drawBorder: false }
                 },
                 x: {
-                    ticks: {
-                        color: 'rgba(255, 255, 255, 0.9)',
-                        font: {
-                            size: 11,
-                            weight: 'bold'
-                        }
-                    },
-                    grid: {
-                        color: 'rgba(255, 255, 255, 0.1)',
-                        drawBorder: false
-                    }
+                    ticks: { color: 'rgba(255, 255, 255, 0.9)', font: { size: 11, weight: 'bold' } },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)', drawBorder: false }
                 }
             }
         }
     });
 }
 
-// LocalStorage 管理
+/* ========= LocalStorage (收藏) ========= */
 function saveFavoriteTeam(teamIndex) {
     localStorage.setItem(STORAGE_KEY, teamIndex);
     showToast('已設為預設球隊 ' + TEAMS[teamIndex].emoji, 'info');
@@ -975,13 +945,13 @@ function saveFavoriteTeam(teamIndex) {
 
 function getFavoriteTeam() {
     const saved = localStorage.getItem(STORAGE_KEY);
-    return saved !== null ? parseInt(saved) : null;
+    return saved !== null ? parseInt(saved, 10) : null;
 }
 
 function updateFavoriteButton() {
     const btn = document.getElementById('favoriteBtn');
     const favorite = getFavoriteTeam();
-    
+
     if (favorite === currentTeam) {
         btn.classList.add('active');
         btn.textContent = '⭐';
@@ -993,123 +963,153 @@ function updateFavoriteButton() {
     }
 }
 
+/* 格式化時間 */
 function formatTime(timeStr) {
     const date = new Date(timeStr);
+    if (isNaN(date)) return timeStr || '';
     return `${date.getMonth()+1}/${date.getDate()} ${String(date.getHours()).padStart(2, '0')}:00`;
 }
 
+/* ========= 取得天氣資料 (容錯處理不同回傳結構) ========= */
 async function fetchWeather(cityKey) {
     try {
         showLoading(true);
         document.getElementById('loading-message').textContent = '載入天氣資料中...';
-        
-        const response = await fetch(`${API_BASE_URL}/api/weather/${cityKey}`);
+
+        const response = await fetch(`${API_BASE_URL}/${cityKey}`);
         const result = await response.json();
-        
-        if (!result.success) {
-            throw new Error(result.message || '無法取得天氣資料');
+
+        // 支援多種回傳結構：result.data.forecasts 或 result.forecasts
+        let data = null;
+        if (result && result.success && result.data) {
+            data = result.data;
+        } else if (result && result.success === undefined && result.data) {
+            // some APIs might not return 'success' boolean
+            data = result.data;
+        } else if (result && result.forecasts) {
+            // fallback: top-level forecasts
+            data = { forecasts: result.forecasts };
+        } else if (result && result.data && result.data.forecasts) {
+            data = result.data;
         }
-        
-        weatherCache[cityKey] = result.data;
-        return result.data;
+
+        if (!data || !data.forecasts || !Array.isArray(data.forecasts) || data.forecasts.length === 0) {
+            // 嘗試直接把整個 result 當 data
+            if (result && result.forecasts) {
+                data = { forecasts: result.forecasts };
+            } else {
+                throw new Error('無法解析天氣資料（格式不正確）');
+            }
+        }
+
+        // 取得成功，快取並回傳
+        weatherCache[cityKey] = data;
+        return data;
+
     } catch (error) {
         console.error('取得天氣失敗:', error);
-        showToast('無法取得天氣資料,請檢查網路連線或稍後再試', 'error', 5000);
+        showToast('無法取得天氣資料,請檢查網路或 API', 'error', 5000);
         throw error;
     } finally {
         showLoading(false);
     }
 }
 
+/* ========= 將天氣資料渲染到畫面 ========= */
 function renderWeather(data) {
-    if (!data || !data.forecasts || data.forecasts.length === 0) {
+    if (!data || !data.forecasts || !data.forecasts.length) {
         showToast('天氣資料格式錯誤', 'error');
         return;
     }
 
     const current = data.forecasts[0];
-    
-    // 更新主要天氣卡片
-    const avgTemp = Math.round((parseInt(current.minTemp) + parseInt(current.maxTemp)) / 2);
-    const weatherEmoji = getEmoji(current.weather);
-    
+
+    // 計算平均溫度（當前用首筆）
+    const minT = parseInt(current.minTemp);
+    const maxT = parseInt(current.maxTemp);
+    const avgTemp = (isFinite(minT) && isFinite(maxT)) ? Math.round((minT + maxT) / 2) : '--';
+    const weatherEmoji = getEmoji(current.weather || '');
+
     document.getElementById('heroIcon').textContent = weatherEmoji;
-    document.getElementById('heroTemp').textContent = `${avgTemp}°`;
-    document.getElementById('heroWeatherDesc').textContent = current.weather;
-    document.getElementById('heroMinMaxTemp').textContent = 
-        `最低 ${current.minTemp}° / 最高 ${current.maxTemp}°`;
-    
+    document.getElementById('heroTemp').textContent = (avgTemp === '--' ? '--' : `${avgTemp}°`);
+    document.getElementById('heroWeatherDesc').textContent = current.weather || '';
+    document.getElementById('heroMinMaxTemp').textContent = `最低 ${current.minTemp || '--'}° / 最高 ${current.maxTemp || '--'}°`;
+
     // 天氣動畫效果
-    createWeatherEffect(current.weather);
-    
-    // 溫度趨勢圖
+    createWeatherEffect(current.weather || '');
+
+    // 溫度趨勢圖 (使用 data.forecasts)
     createTempChart(data.forecasts);
-    
+
     // 更新 36 小時預報
     const container = document.getElementById('futureForecasts');
     container.innerHTML = '';
-    
+
     data.forecasts.forEach((forecast, idx) => {
         const card = document.createElement('div');
         card.className = 'mini-card';
         card.style.animationDelay = `${idx * 0.05}s`;
-        
-        const avgTemp = Math.round((parseInt(forecast.minTemp) + parseInt(forecast.maxTemp)) / 2);
-        const icon = getEmoji(forecast.weather);
-        
+
+        const fMin = parseInt(forecast.minTemp);
+        const fMax = parseInt(forecast.maxTemp);
+        const avg = (isFinite(fMin) && isFinite(fMax)) ? Math.round((fMin + fMax) / 2) : '--';
+        const icon = getEmoji(forecast.weather || '');
+        const rain = (forecast.rain !== undefined && forecast.rain !== null) ? `${forecast.rain}%` : '';
+
         card.innerHTML = `
             <div class="mini-card-time">${formatTime(forecast.startTime)}</div>
             <div class="mini-card-icon">${icon}</div>
-            <div class="mini-card-temp">${avgTemp}°</div>
-            <div class="mini-card-pop">${forecast.rain}%</div>
+            <div class="mini-card-temp">${avg}°</div>
+            <div class="mini-card-pop">${rain}</div>
         `;
         container.appendChild(card);
     });
-    
-    // 更新建議卡片
-    const advice = getAdvice(current.weather, current.comfort);
+
+    // 建議卡片
+    const advice = getAdvice(current.weather || '', current.comfort || '');
     document.getElementById('adviceIcon').textContent = advice.icon;
     document.getElementById('adviceTitle').textContent = advice.title;
     document.getElementById('adviceText').textContent = advice.text;
-    
+
     // 穿搭建議
-    renderClothingSuggestions(avgTemp, current.weather);
-    
+    renderClothingSuggestions(avgTemp, current.weather || '');
+
     // 更新時間
-    const now = new Date().toLocaleString('zh-TW', { 
+    const now = new Date().toLocaleString('zh-TW', {
         year: 'numeric',
-        month: '2-digit', 
+        month: '2-digit',
         day: '2-digit',
-        hour: '2-digit', 
-        minute: '2-digit' 
+        hour: '2-digit',
+        minute: '2-digit'
     });
-    document.getElementById('updateTime').textContent = `更新時間:${now}`;
+    document.getElementById('updateTime').textContent = `更新時間: ${now}`;
 }
 
+/* ========= 切換球隊並載入天氣 ========= */
 async function updateTeam(idx) {
     currentTeam = idx;
     const team = TEAMS[idx];
-    
+
     // 更新主題色
     document.body.style.background = team.gradient;
     document.querySelector('.teams-bar-wrapper').style.background = 'rgba(255, 255, 255, 0.1)';
-    
-    // 更新 CSS 變數以影響圖表顏色
+
+    // 更新 CSS 變數
     document.documentElement.style.setProperty('--accent', team.primary);
     document.documentElement.style.setProperty('--accent-2', team.secondary);
-    
+
     document.getElementById('currentTeamEmoji').textContent = team.emoji;
     document.getElementById('currentTeamCity').textContent = team.city;
     document.getElementById('teamNameBadge').textContent = team.name;
-    
+
     document.querySelectorAll('.team-btn').forEach((btn, i) => {
         btn.classList.toggle('active', i === idx);
     });
 
     particles.forEach(p => p.emoji = team.emoji);
-    
+
     updateFavoriteButton();
-    
+
     try {
         let weatherData = weatherCache[team.cityKey];
         if (!weatherData) {
@@ -1121,6 +1121,7 @@ async function updateTeam(idx) {
     }
 }
 
+/* ========= 建立球隊按鈕 ========= */
 function buildTeamButtons() {
     const bar = document.getElementById('teamsBar');
     TEAMS.forEach((team, idx) => {
@@ -1132,18 +1133,22 @@ function buildTeamButtons() {
     });
 }
 
+/* ========= 事件綁定 ========= */
 document.getElementById('refreshBtn').addEventListener('click', async () => {
     const team = TEAMS[currentTeam];
     delete weatherCache[team.cityKey];
     showToast('重新載入天氣資料中...', 'info');
-    await updateTeam(currentTeam);
-    showToast('天氣資料已更新', 'info');
+    try {
+        await updateTeam(currentTeam);
+        showToast('天氣資料已更新', 'info');
+    } catch (e) {
+        // already handled in updateTeam
+    }
 });
 
-// 收藏按鈕事件
 document.getElementById('favoriteBtn').addEventListener('click', () => {
     const favorite = getFavoriteTeam();
-    
+
     if (favorite === currentTeam) {
         // 取消收藏
         localStorage.removeItem(STORAGE_KEY);
@@ -1152,22 +1157,22 @@ document.getElementById('favoriteBtn').addEventListener('click', () => {
         // 設為收藏
         saveFavoriteTeam(currentTeam);
     }
-    
+
     updateFavoriteButton();
 });
 
+/* ========= 初始化 ========= */
 async function init() {
     buildTeamButtons();
     initParticles();
-    
-    // 檢查是否有預設球隊
+
     const favoriteTeam = getFavoriteTeam();
     const initialTeam = favoriteTeam !== null ? favoriteTeam : 0;
-    
+
     setTimeout(async () => {
         document.getElementById('appRoot').style.display = 'flex';
         await updateTeam(initialTeam);
-        
+
         if (favoriteTeam !== null) {
             showToast('已載入您的預設球隊 ' + TEAMS[favoriteTeam].emoji, 'info', 2000);
         }
