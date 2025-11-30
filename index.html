@@ -1,985 +1,1179 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>小張報氣象 - 中華職棒全隊版（改良版）</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>小張報氣象 - 中職跪棒全隊版</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+    --accent: #FFB81C;
+    --accent-2: #002D62;
+    --accent-text: #002D62;
+    --bg-gradient: linear-gradient(135deg, #FFB81C 0%, #002D62 100%);
+    --surface: rgba(255, 255, 255, 0.15);
+    --muted: #333;
+    --glass: rgba(255, 255, 255, 0.25);
+    --radius: 20px;
+    --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --shadow-heavy: 0 16px 48px rgba(0, 0, 0, 0.2);
+}
 
-  <!-- font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+* { box-sizing: border-box; }
 
-  <style>
-    /* ========== CSS VARIABLES & RESET ========== */
-    :root{
-      --bg: linear-gradient(135deg,#fff,#f8f8f8);
-      --surface: rgba(255,255,255,0.95);
-      --muted: #666;
-      --glass: rgba(255,255,255,0.25);
-      --radius: 16px;
-      --accent: #FFB81C; /* default team color (brothers) */
-      --accent-2: #002D62;
-      --accent-text: #002D62;
-      --team-emoji: "🐘";
-      --card-border: 3px solid var(--accent);
-      --max-width: 680px;
-      --shadow-soft: 0 8px 24px rgba(0,0,0,0.12);
-      --shadow-sm: 0 3px 8px rgba(0,0,0,0.10);
-    }
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    transition: background 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-    /* Reset */
-    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-    html,body{height:100%}
-    body{
-      font-family: 'Noto Sans TC', sans-serif;
-      color:#1A1A1A;
-      background:var(--bg);
-      min-height:100vh;
-      transition:background .45s ease, color .3s ease;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      padding-bottom:28px;
-    }
+/* 天氣動畫效果 */
+#weatherEffects {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+    overflow: hidden;
+}
 
-    /* dark mode fallback */
-    @media (prefers-color-scheme: dark) {
-      :root { --bg: linear-gradient(135deg,#0f1720,#0b1116); --surface: rgba(10,10,10,0.75); --muted:#bfc8d6; }
-      body { color:#f3f6fb; }
-    }
+.raindrop {
+    position: absolute;
+    width: 2px;
+    height: 20px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.3), rgba(255,255,255,0.8));
+    animation: fall linear infinite;
+}
 
-    .app {
-      max-width:var(--max-width);
-      margin:20px auto;
-      padding:18px;
+@keyframes fall {
+    to {
+        transform: translateY(100vh);
     }
+}
 
-    /* ========== STATUS BAR ========== */
-    .status-bar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:12px 14px;
-      border-radius:12px;
-      background: linear-gradient(135deg, rgba(0,0,0,0.08), rgba(255,255,255,0.02));
-      backdrop-filter: blur(8px);
-      border-left: 6px solid var(--accent);
-      box-shadow: var(--shadow-sm);
-      position:sticky;
-      top:12px;
-      z-index:60;
-    }
-    .location-pill{
-      background:var(--accent);
-      color:var(--accent-text);
-      padding:8px 16px;
-      border-radius:22px;
-      font-weight:900;
-      transform:skewX(-5deg);
-      border:2px solid rgba(255,255,255,0.5);
-      letter-spacing:1px;
-      display:inline-block;
-    }
-    .update-pill{
-      font-size:0.86rem;
-      color:var(--accent-text);
-      background: rgba(255,255,255,0.12);
-      padding:6px 12px;
-      border-radius:14px;
-      font-weight:700;
-      border:1px solid rgba(0,0,0,0.06);
-    }
+.sunray {
+    position: absolute;
+    width: 3px;
+    height: 80px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.4));
+    animation: shine 3s ease-in-out infinite;
+    transform-origin: top center;
+}
 
-    /* ========== TITLE ========== */
-    .app-title{ text-align:center; margin:18px 0 8px; position:relative; }
-    .app-title h1{
-      font-size: clamp(1.6rem, 3.8vw, 2.6rem);
-      font-weight:900;
-      color:var(--accent);
-      text-shadow: 2px 2px 0 var(--accent-2), 4px 4px 0 rgba(0,0,0,0.12);
-      transform:skewY(-2deg);
-      letter-spacing:3px;
-    }
-    .app-subtitle{
-      font-size:0.86rem;
-      color:var(--muted);
-      font-weight:700;
-      margin-top:6px;
-      letter-spacing:1.5px;
-    }
+@keyframes shine {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+}
 
-    /* ========== TEAM SELECTOR ========== */
-    .team-selector{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:10px;
-      margin:16px 0;
-      padding:12px;
-      background: rgba(0,0,0,0.03);
-      border-radius:12px;
-    }
-    .team-btn{
-      padding:10px 8px;
-      border-radius:12px;
-      font-weight:900;
-      font-size:0.92rem;
-      cursor:pointer;
-      border:2px solid rgba(0,0,0,0.06);
-      background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.35));
-      transition:transform .18s ease, box-shadow .18s ease;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-    }
-    .team-btn:hover{ transform:translateY(-4px); box-shadow:var(--shadow-sm); }
-    .team-btn:focus-visible{
-      outline: 3px solid var(--accent);
-      outline-offset: 3px;
-      transform:translateY(-2px);
-    }
-    .team-btn.active{
-      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.9));
-      border-color: white;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
-      transform:scale(1.04);
-    }
+.cloud {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 100px;
+    animation: drift linear infinite;
+}
 
-    /* ========== HERO CARD ========== */
-    .hero-card{
-      background:var(--surface);
-      border-radius:20px;
-      padding:24px;
-      text-align:center;
-      box-shadow:var(--shadow-soft);
-      border:var(--card-border);
-      position:relative;
-      overflow:hidden;
-      transition:transform .35s ease, opacity .35s ease;
-    }
-    .hero-card::before{
-      content: var(--team-emoji);
-      position:absolute;
-      font-size:12rem;
-      opacity:0.03;
-      top:50%;
-      left:50%;
-      transform:translate(-50%,-50%) rotate(8deg);
-      pointer-events:none;
-    }
-    .hero-period{
-      position:absolute;
-      top:-10px;
-      left:50%;
-      transform:translateX(-50%) skewX(-5deg);
-      background:var(--accent);
-      color:var(--accent-text);
-      padding:8px 22px;
-      border-radius:24px;
-      font-weight:900;
-      border:3px solid rgba(255,255,255,0.9);
-      box-shadow: var(--shadow-sm);
-      z-index:2;
-    }
-    .hero-temp-container{
-      display:flex;
-      flex-direction:row;
-      justify-content:center;
-      align-items:center;
-      gap:18px;
-      margin:18px 0;
-      z-index:2;
-    }
-    .hero-icon{
-      font-size:clamp(3.2rem,7vw,5.2rem);
-      filter:drop-shadow(0 8px 18px rgba(0,0,0,0.12));
-      animation: float 4s ease-in-out infinite;
-    }
-    @keyframes float{
-      0%,100%{ transform:translateY(0) }
-      50%{ transform:translateY(-8px) }
-    }
-    .hero-temp{
-      font-size: clamp(2.2rem, 6vw, 4.6rem);
-      font-weight:900;
-      color:var(--accent);
-      line-height:1;
-      text-shadow: 1px 1px 0 var(--accent-2), 3px 3px 0 rgba(0,0,0,0.08);
-      transform:skewY(-2deg);
-      transition: transform .25s ease;
-    }
-    .hero-desc{
-      font-size:1.2rem;
-      color:#1A1A1A;
-      margin-bottom:10px;
-      font-weight:900;
-      z-index:2;
-    }
+@keyframes drift {
+    from { transform: translateX(-100px); }
+    to { transform: translateX(calc(100vw + 100px)); }
+}
 
-    /* ========== ADVICE GRID ========== */
-    .advice-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-      margin-top:14px;
-      padding-top:14px;
-      border-top:3px dashed var(--accent);
-    }
-    .advice-item{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      padding:12px;
-      border-radius:12px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85));
-      border:2px solid rgba(0,0,0,0.04);
-      box-shadow:var(--shadow-sm);
-      transition: transform .18s ease;
-    }
-    .advice-item:hover{ transform:translateY(-4px) }
-    .advice-icon{ font-size:2.2rem; margin-bottom:6px; filter:drop-shadow(0 3px 6px rgba(0,0,0,0.12)); }
-    .advice-text{ font-weight:900; color:var(--accent); font-size:1.05rem; }
-    .advice-subtext{ font-size:0.78rem; color:var(--muted); font-weight:800; margin-top:6px; }
+#particleCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.15;
+}
 
-    /* ========== SCROLL / MINI CARDS ========== */
-    .section-title{
-      font-size:1.12rem;
-      color:var(--accent);
-      font-weight:900;
-      margin:18px 4px 10px;
-      display:inline-block;
-      padding:8px 12px;
-      border-left:5px solid var(--accent);
-      background: rgba(0,0,0,0.04);
-      border-radius:10px;
-      transform:skewX(-3deg);
-    }
-    .scroll-wrap{ position:relative; margin-top:6px; }
-    .scroll-container{
-      display:flex;
-      overflow-x:auto;
-      gap:14px;
-      padding:12px 6px 18px;
-      scrollbar-width: thin;
-      scrollbar-color: var(--accent) rgba(255,255,255,0.2);
-    }
-    .scroll-container::-webkit-scrollbar { height:8px }
-    .scroll-container::-webkit-scrollbar-track { background: rgba(0,0,0,0.04); border-radius:10px }
-    .scroll-container::-webkit-scrollbar-thumb { background:var(--accent); border-radius:10px }
+#appRoot {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 680px;
+    padding: 0 16px 60px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-    .mini-card{
-      min-width:150px;
-      background:var(--surface);
-      border-radius:14px;
-      padding:14px 12px;
-      text-align:center;
-      border:2px solid rgba(0,0,0,0.04);
-      flex-shrink:0;
-      box-shadow:var(--shadow-sm);
-      transition: transform .18s ease;
-    }
-    .mini-card:hover{ transform:translateY(-6px) }
-    .mini-time{
-      display:inline-block;
-      background:var(--accent);
-      color:var(--accent-text);
-      padding:6px 12px;
-      border-radius:12px;
-      font-weight:900;
-      font-size:0.9rem;
-      margin-bottom:10px;
-    }
-    .mini-icon{ font-size:2.6rem; margin:8px 0; }
-    .mini-temp{ font-weight:900; font-size:1.05rem; }
-    .mini-rain{ font-size:0.9rem; color:#2196F3; margin-top:7px; font-weight:800 }
+.teams-bar-wrapper {
+    width: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 16px 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: background 0.5s;
+}
 
-    /* arrow hint */
-    .scroll-arrow{
-      position:absolute;
-      top:50%;
-      transform:translateY(-50%);
-      width:40px;height:40px;border-radius:50%;
-      display:flex;align-items:center;justify-content:center;
-      background:rgba(0,0,0,0.06);
-      backdrop-filter: blur(4px);
-      z-index:30;
-      pointer-events:none;
-      opacity:0;
-      transition:opacity .28s ease, transform .28s ease;
-    }
-    .scroll-arrow.visible{ opacity:1; pointer-events:auto }
-    .scroll-arrow.left{ left:8px; transform:translateY(-50%) translateX(0) }
-    .scroll-arrow.right{ right:8px; transform:translateY(-50%) translateX(0) }
+.teams-bar {
+    width: 100%;
+    max-width: 680px;
+    padding: 0 16px;
+    margin: 0 auto;
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+}
+.teams-bar::-webkit-scrollbar { display: none; }
 
-    /* refresh floating button */
-    .refresh-btn{
-      position:fixed;right:22px;bottom:22px;width:56px;height:56px;border-radius:50%;
-      display:flex;align-items:center;justify-content:center;
-      background:var(--accent); color:var(--accent-text); border:3px solid white;
-      box-shadow:0 8px 24px rgba(0,0,0,0.18); cursor:pointer; z-index:80;
-      transition: transform .28s ease;
-    }
-    .refresh-btn:hover{ transform: rotate(180deg) scale(1.05) }
-    .refresh-btn:focus-visible{
-      outline: 4px solid var(--accent);
-      outline-offset: 4px;
-    }
+.team-btn {
+    min-width: 64px;
+    height: 64px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 28px;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-    /* loading screen */
-    .loading-screen{
-      position:fixed;left:0;right:0;top:0;bottom:0;display:flex;
-      align-items:center;justify-content:center;flex-direction:column;z-index:999;
-      background: linear-gradient(135deg, rgba(0,0,0,0.18), rgba(255,255,255,0.02));
-      transition:opacity .28s ease, visibility .28s;
+.team-btn:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: var(--shadow-heavy);
+}
+
+.team-btn.active {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-2), var(--shadow-heavy);
+    transform: scale(1.15);
+}
+
+.app-title {
+    width: 100%;
+    padding: 32px 0 24px;
+    color: white;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.app-title h1 {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 900;
+    text-align: center;
+    margin: 0 0 8px 0;
+}
+
+.team-name-badge {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border-radius: 999px;
+    padding: 8px 24px;
+    display: inline-block;
+    margin: 0 auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.hero-card {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius);
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: var(--shadow-heavy);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 28px;
+}
+
+.hero-icon {
+    font-size: 100px;
+    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.2));
+    margin-bottom: 16px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.hero-temp {
+    font-size: clamp(3rem, 8vw, 5rem);
+    font-weight: 900;
+    color: white;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    line-height: 1;
+}
+
+.hero-weather-desc {
+    font-size: 1.4rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 8px;
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.hero-minmax-temp {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 12px;
+}
+
+h2 {
+    width: 100%;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.future-forecasts {
+    width: 100%;
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    margin-bottom: 28px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+}
+
+.future-forecasts::-webkit-scrollbar {
+    height: 8px;
+}
+.future-forecasts::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+}
+
+.mini-card {
+    min-width: 100px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: slideIn 0.5s ease-out backwards;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
     }
-    .loading-icon{ font-size:clamp(3.5rem,9vw,5rem); animation:spin 1.8s linear infinite; filter: drop-shadow(0 8px 20px rgba(0,0,0,0.18)); }
-    @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
-    .loading-text{ margin-top:18px; font-weight:900; color:var(--accent); letter-spacing:2px; }
-
-    /* toast */
-    .toast{
-      position:fixed;left:50%;transform:translateX(-50%);bottom:92px;
-      background:rgba(20,20,30,0.98); color:white;padding:12px 18px;border-radius:12px;
-      box-shadow:0 10px 30px rgba(0,0,0,0.35); z-index:9999; display:inline-flex; align-items:center; gap:10px;
-      opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease;
-      max-width:90%; min-width:280px;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
-    .toast.show{ opacity:1; pointer-events:auto; transform: translateX(-50%) translateY(0) }
-    .toast.success{ background: linear-gradient(90deg,#2CC48A,#0EA5A1) }
-    .toast.error{ background: linear-gradient(90deg,#FF6B6B,#FF8A5B); padding:14px 20px; }
-    .toast button:hover{ opacity:0.9; transform:scale(1.05); }
-    .toast button:focus-visible{ outline:2px solid white; outline-offset:2px; }
+}
 
-    /* small screens */
-    @media (max-width:480px){
-      .team-selector{ grid-template-columns: repeat(3, 1fr); gap:8px; padding:8px }
-      .mini-card{ min-width:130px; padding:10px }
-      .hero-card{ padding:18px }
-      .app { padding:12px }
+.mini-card:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: var(--shadow-heavy);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.mini-card-time {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.mini-card-icon {
+    font-size: 36px;
+    margin: 4px 0;
+}
+
+.mini-card-temp {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    margin-top: 8px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.mini-card-pop {
+    font-size: 0.85rem;
+    margin-top: 4px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.advice-card {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow-soft);
+    margin-bottom: 28px;
+    border-left: 6px solid rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    transition: all 0.3s ease;
+}
+
+.advice-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-heavy);
+}
+
+.advice-icon {
+    font-size: 48px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+}
+
+.advice-content h3 {
+    margin: 0 0 8px;
+    font-size: 1.2rem;
+    color: white;
+    font-weight: 700;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.advice-content p {
+    margin: 0;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+}
+
+.meta-info {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    padding: 0 4px;
+}
+
+.refresh-btn {
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-weight: 700;
+}
+
+.refresh-btn:hover {
+    background: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-soft);
+}
+
+#loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #FFB81C 0%, #002D62 100%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s ease;
+}
+
+#loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+#loading-message {
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.toast {
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 80vw;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(-10px);
+}
+
+footer {
+    width: 100%;
+    max-width: 680px;
+    text-align: center;
+    padding: 20px 16px;
+    margin: 20px auto 0;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+footer a {
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* 溫度趨勢圖 */
+.chart-container {
+    width: 100%;
+    height: 200px;
+    margin-bottom: 28px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow-soft);
+}
+
+#tempChart {
+    width: 100%;
+    height: 100%;
+}
+
+/* 穿搭建議圖示 */
+.clothing-suggestions {
+    width: 100%;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+.clothing-item {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 80px;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.3s ease;
+    animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) backwards;
+}
+
+.clothing-item:nth-child(1) { animation-delay: 0.1s; }
+.clothing-item:nth-child(2) { animation-delay: 0.15s; }
+.clothing-item:nth-child(3) { animation-delay: 0.2s; }
+.clothing-item:nth-child(4) { animation-delay: 0.25s; }
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
     }
-
-    /* tablet / desktop adjustments */
-    @media (min-width:900px){
-      .team-selector{ grid-template-columns: repeat(6, 1fr) }
-      .scroll-container{ padding-left:6px; }
-      .app { padding:24px }
+    to {
+        opacity: 1;
+        transform: scale(1);
     }
+}
 
-    /* utility */
-    .hidden{ display:none!important; }
-    .fade-in{ animation: fadeIn .35s ease both }
-    @keyframes fadeIn{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none} }
+.clothing-item:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: var(--shadow-heavy);
+}
 
-  </style>
+.clothing-icon {
+    font-size: 32px;
+}
+
+.clothing-label {
+    font-size: 0.85rem;
+    color: white;
+    font-weight: 600;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 收藏按鈕 */
+.favorite-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+.favorite-btn:hover {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.favorite-btn.active {
+    background: rgba(255, 215, 0, 0.9);
+    border-color: gold;
+    animation: heartbeat 0.6s ease;
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    25% { transform: scale(1.3); }
+    50% { transform: scale(1.1); }
+    75% { transform: scale(1.25); }
+}
+
+@media (max-width: 480px) {
+    .hero-card { padding: 24px 16px; }
+    .app-title h1 { font-size: 1.6rem; }
+    .chart-container { height: 160px; padding: 12px; }
+    .clothing-item { min-width: 70px; padding: 10px 12px; }
+}
+</style>
 </head>
 <body>
-  <div class="loading-screen" id="loading">
-    <div class="loading-icon" id="loadingIcon">⚾</div>
-    <div class="loading-text" id="loadingText">小張正在觀測氣象中...</div>
-  </div>
 
-  <div class="app" id="appRoot" style="display:none;">
-    <div class="status-bar" role="region" aria-label="狀態列">
-      <div class="location-pill" id="locationPill">📍 臺中</div>
-      <div id="updateTime" class="update-pill">更新中...</div>
-    </div>
+<div id="weatherEffects"></div>
 
+<canvas id="particleCanvas"></canvas>
+
+<div id="loading">
+    <div id="loading-spinner"></div>
+    <div id="loading-message">載入中...</div>
+</div>
+
+<div class="teams-bar-wrapper">
+    <nav class="teams-bar" id="teamsBar"></nav>
+</div>
+
+<main id="appRoot" style="display: none;">
     <div class="app-title">
-      <h1>⚾ 小張報氣象 ⚾</h1>
-      <div class="app-subtitle">WEATHER FORECAST · CPBL STYLE</div>
+        <h1>小張報氣象:<span id="currentTeamEmoji"></span><span id="currentTeamCity">臺中市</span></h1>
+        <div class="team-name-badge" id="teamNameBadge">中信兄弟</div>
+        <button class="favorite-btn" id="favoriteBtn" title="設為預設球隊">⭐</button>
     </div>
 
-    <div class="team-selector" id="teamSelector" aria-label="選擇球隊">
-      <!-- buttons 由 JS 插入 -->
+    <div class="hero-card">
+        <div class="hero-icon" id="heroIcon">☀️</div>
+        <div class="hero-temp" id="heroTemp">28°</div>
+        <div class="hero-weather-desc" id="heroWeatherDesc">多雲時晴</div>
+        <div class="hero-minmax-temp" id="heroMinMaxTemp">最低 24° / 最高 32°</div>
     </div>
 
-    <div id="heroCardContainer" class="fade-in">
-      <!-- hero card 由 JS 插入 -->
+    <h2>📊 溫度趨勢</h2>
+    <div class="chart-container">
+        <canvas id="tempChart"></canvas>
     </div>
 
-    <div>
-      <h3 class="section-title">📋 未來 36 小時預報</h3>
-      <div class="scroll-wrap">
-        <div class="scroll-arrow left" id="arrowLeft">◀</div>
-        <div class="scroll-arrow right" id="arrowRight">▶</div>
-        <div class="scroll-container" id="futureForecasts" tabindex="0" aria-label="未來 36 小時預報卡片"></div>
-      </div>
+    <h2>36 小時預報</h2>
+    <div class="future-forecasts" id="futureForecasts"></div>
+
+    <h2>穿搭與建議</h2>
+    <div class="advice-card">
+        <div class="advice-icon" id="adviceIcon">👕</div>
+        <div class="advice-content">
+            <h3 id="adviceTitle">舒適宜人</h3>
+            <p id="adviceText">天氣溫和,可自由選擇舒適的穿著。</p>
+        </div>
     </div>
-  </div>
 
-  <button class="refresh-btn hidden" id="refreshBtn" aria-label="重新整理">🔄</button>
+    <div class="clothing-suggestions" id="clothingSuggestions"></div>
 
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="meta-info">
+        <span id="updateTime">更新時間:載入中</span>
+        <button class="refresh-btn" id="refreshBtn">
+            <span>↻</span>
+            重新整理
+        </button>
+    </div>
+</main>
 
-  <script>
-    /* =========================
-       DATA: TEAMS
-       ========================= */
-    const TEAMS = {
-      brothers: { name:'中信兄弟', city:'taichung', cityName:'臺中', emoji:'🐘', primary:'#FFB81C', secondary:'#002D62', text:'#002D62' },
-      lions:     { name:'統一獅',   city:'tainan',  cityName:'臺南', emoji:'🦁', primary:'#FF6600', secondary:'#1A1A1A', text:'#FFFFFF' },
-      monkeys:   { name:'樂天桃猿', city:'taoyuan', cityName:'桃園', emoji:'🐵', primary:'#C8102E', secondary:'#8B1538', text:'#FFFFFF' },
-      guardians: { name:'富邦悍將', city:'newtaipei', cityName:'新北', emoji:'🛡️', primary:'#0055B8', secondary:'#003087', text:'#FFFFFF' },
-      dragons:   { name:'味全龍',   city:'taipei',  cityName:'臺北', emoji:'🐉', primary:'#E4002B', secondary:'#C8102E', text:'#FFFFFF' },
-      hawks:     { name:'台鋼雄鷹', city:'kaohsiung',cityName:'高雄', emoji:'🦅', primary:'#00695C', secondary:'#004D40', text:'#FFFFFF' }
-    };
+<div id="toast-container"></div>
 
-    /* =========================
-       STATE
-       ========================= */
-    let currentTeam = localStorage.getItem('selectedTeam') || 'brothers';
-    let justLoaded = true;
+<footer>
+    <p>資料來源:中央氣象署 | 本網站為展示用途</p>
+</footer>
 
-    /* =========================
-       UTIL: THEME / CSS VARS
-       ========================= */
-    function applyTeamTheme(teamId) {
-      const t = TEAMS[teamId];
-      if(!t) return;
-      document.documentElement.style.setProperty('--accent', t.primary);
-      document.documentElement.style.setProperty('--accent-2', t.secondary);
-      document.documentElement.style.setProperty('--accent-text', t.text);
-      document.documentElement.style.setProperty('--team-emoji', `"${t.emoji}"`);
-      document.documentElement.style.setProperty('--card-border', `3px solid ${t.primary}`);
-      document.documentElement.style.setProperty('--loading-bg', t.primary);
-      document.getElementById('locationPill').textContent = `📍 ${t.cityName}`;
-      currentTeam = teamId;
-      localStorage.setItem('selectedTeam', teamId);
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script>
+const API_BASE_URL = 'http://localhost:3000';
+const STORAGE_KEY = 'favorite_team';
 
-      // loading icon color sync (small visual)
-      const loadingIcon = document.getElementById('loadingIcon');
-      if (loadingIcon) loadingIcon.textContent = t.emoji;
-    }
+const TEAMS = [
+    { id: 'brothers', name: '中信兄弟', city: '臺中市', cityKey: 'taichung', emoji: '🐘', 
+      gradient: 'linear-gradient(135deg, #FFB81C 0%, #002D62 100%)',
+      primary: '#FFB81C', secondary: '#002D62' },
+    { id: 'monkeys', name: '樂天桃猿', city: '桃園市', cityKey: 'taoyuan', emoji: '🐵', 
+      gradient: 'linear-gradient(135deg, #D50A20 0%, #8B0000 100%)',
+      primary: '#D50A20', secondary: '#8B0000' },
+    { id: 'lions', name: '統一獅', city: '臺南市', cityKey: 'tainan', emoji: '🦁', 
+      gradient: 'linear-gradient(135deg, #FF7700 0%, #00548E 100%)',
+      primary: '#FF7700', secondary: '#00548E' },
+    { id: 'guards', name: '富邦悍將', city: '新北市', cityKey: 'newtaipei', emoji: '🔱', 
+      gradient: 'linear-gradient(135deg, #0070A0 0%, #E6004C 100%)',
+      primary: '#0070A0', secondary: '#E6004C' },
+    { id: 'dragons', name: '味全龍', city: '臺北市', cityKey: 'taipei', emoji: '🐉', 
+      gradient: 'linear-gradient(135deg, #E3002C 0%, #000000 100%)',
+      primary: '#E3002C', secondary: '#000000' },
+    { id: 'hawkes', name: '台鋼雄鷹', city: '高雄市', cityKey: 'kaohsiung', emoji: '🦅', 
+      gradient: 'linear-gradient(135deg, #1E4936 0%, #6B8E23 100%)',
+      primary: '#1E4936', secondary: '#6B8E23' },
+];
 
-    /* =========================
-       RENDER: TEAM BUTTONS
-       ========================= */
-    const teamSelector = document.getElementById('teamSelector');
-    function buildTeamButtons() {
-      teamSelector.innerHTML = '';
-      Object.keys(TEAMS).forEach(key => {
-        const b = document.createElement('button');
-        b.className = 'team-btn' + (key === currentTeam ? ' active' : '');
-        b.dataset.team = key;
-        b.type = 'button';
-        b.innerHTML = `${TEAMS[key].emoji} ${TEAMS[key].name}`;
-        
-        // 無障礙改善: 加入 ARIA 屬性
-        b.setAttribute('role', 'button');
-        b.setAttribute('aria-pressed', key === currentTeam ? 'true' : 'false');
-        b.setAttribute('aria-label', `切換至 ${TEAMS[key].name} ${TEAMS[key].cityName} 的天氣`);
-        
-        // 點擊事件
-        const switchTeam = () => {
-          if (currentTeam === key) return;
-          document.querySelectorAll('.team-btn').forEach(x => {
-            x.classList.remove('active');
-            x.setAttribute('aria-pressed', 'false');
-          });
-          b.classList.add('active');
-          b.setAttribute('aria-pressed', 'true');
-          applyTeamTheme(key);
-          showLoading(true, `切換 ${TEAMS[key].name} 資料中...`);
-          fetchWeather(TEAMS[key].city);
-        };
-        
-        b.addEventListener('click', switchTeam);
-        
-        // 鍵盤支援: Enter 和 Space 鍵
-        b.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            switchTeam();
-          }
+let currentTeam = 0;
+let particles = [];
+let canvas, ctx;
+let weatherCache = {};
+let tempChart = null;
+
+// Canvas 粒子背景
+function initParticles() {
+    canvas = document.getElementById('particleCanvas');
+    ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    particles = [];
+    for (let i = 0; i < 30; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: (Math.random() - 0.5) * 0.5,
+            size: Math.random() * 30 + 20,
+            emoji: TEAMS[currentTeam].emoji
         });
+    }
+    animateParticles();
+}
+
+function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+        ctx.font = `${p.size}px Arial`;
+        ctx.fillText(p.emoji, p.x, p.y);
+    });
+
+    requestAnimationFrame(animateParticles);
+}
+
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+
+function showToast(msg, type = 'info', duration = 3000) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = msg;
+    container.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, duration);
+}
+
+function showLoading(show) {
+    document.getElementById('loading').style.display = show ? 'flex' : 'none';
+}
+
+function getEmoji(desc) {
+    if (desc.includes('雨')) return '🌧️';
+    if (desc.includes('雷')) return '⛈️';
+    if (desc.includes('晴')) return '☀️';
+    if (desc.includes('雲')) return '☁️';
+    if (desc.includes('陰')) return '☁️';
+    if (desc.includes('霧')) return '🌫️';
+    return '❓';
+}
+
+function getAdvice(weather, comfort) {
+    if (weather.includes('雷')) return { title: '雷雨警報', text: '請避免戶外活動,並攜帶雨具。', icon: '⛈️' };
+    if (weather.includes('大雨')) return { title: '大雨特報', text: '請注意路面積水,建議穿著雨衣和防水鞋。', icon: '☔' };
+    if (weather.includes('雨')) return { title: '記得帶傘', text: '今日有降雨機會,外出請攜帶雨具。', icon: '🌂' };
+    if (weather.includes('晴')) return { title: '陽光普照', text: '紫外線強,請做好防曬,建議穿著輕薄透氣衣物。', icon: '😎' };
+    if (comfort && comfort.includes('寒冷')) return { title: '注意保暖', text: '天氣較冷,建議多穿一件外套。', icon: '🧥' };
+    if (comfort && comfort.includes('悶熱')) return { title: '注意防暑', text: '天氣悶熱,請多補充水分,避免中暑。', icon: '💧' };
+    return { title: '舒適宜人', text: '天氣溫和,可自由選擇舒適的穿著。', icon: '👕' };
+}
+
+// 天氣動畫效果
+function createWeatherEffect(weather) {
+    const container = document.getElementById('weatherEffects');
+    container.innerHTML = '';
+
+    if (weather.includes('雨')) {
+        // 雨滴效果
+        for (let i = 0; i < 50; i++) {
+            const drop = document.createElement('div');
+            drop.className = 'raindrop';
+            drop.style.left = Math.random() * 100 + '%';
+            drop.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
+            drop.style.animationDelay = Math.random() * 2 + 's';
+            container.appendChild(drop);
+        }
+    } else if (weather.includes('晴')) {
+        // 陽光效果
+        for (let i = 0; i < 10; i++) {
+            const ray = document.createElement('div');
+            ray.className = 'sunray';
+            ray.style.left = (i * 10 + Math.random() * 10) + '%';
+            ray.style.top = '-80px';
+            ray.style.animationDelay = Math.random() * 3 + 's';
+            ray.style.transform = `rotate(${Math.random() * 20 - 10}deg)`;
+            container.appendChild(ray);
+        }
+    } else if (weather.includes('雲') || weather.includes('陰')) {
+        // 雲朵效果
+        for (let i = 0; i < 5; i++) {
+            const cloud = document.createElement('div');
+            cloud.className = 'cloud';
+            cloud.style.width = (Math.random() * 80 + 60) + 'px';
+            cloud.style.height = (Math.random() * 40 + 30) + 'px';
+            cloud.style.top = (Math.random() * 40) + '%';
+            cloud.style.animationDuration = (Math.random() * 20 + 30) + 's';
+            cloud.style.animationDelay = (i * 5) + 's';
+            container.appendChild(cloud);
+        }
+    }
+}
+
+// 穿搭建議
+function getClothingSuggestions(temp, weather) {
+    const suggestions = [];
+    const avgTemp = typeof temp === 'number' ? temp : parseInt(temp);
+
+    if (avgTemp < 15) {
+        suggestions.push({ icon: '🧥', label: '厚外套' });
+        suggestions.push({ icon: '🧣', label: '圍巾' });
+        suggestions.push({ icon: '👖', label: '長褲' });
+    } else if (avgTemp < 20) {
+        suggestions.push({ icon: '🧥', label: '薄外套' });
+        suggestions.push({ icon: '👕', label: '長袖' });
+        suggestions.push({ icon: '👖', label: '長褲' });
+    } else if (avgTemp < 25) {
+        suggestions.push({ icon: '👕', label: '長袖' });
+        suggestions.push({ icon: '👖', label: '長褲' });
+    } else if (avgTemp < 30) {
+        suggestions.push({ icon: '👕', label: '短袖' });
+        suggestions.push({ icon: '🩳', label: '短褲' });
+    } else {
+        suggestions.push({ icon: '👕', label: '短袖' });
+        suggestions.push({ icon: '🩳', label: '短褲' });
+        suggestions.push({ icon: '🧢', label: '遮陽帽' });
+    }
+
+    if (weather.includes('雨')) {
+        suggestions.push({ icon: '☂️', label: '雨傘' });
+    }
+
+    if (weather.includes('晴')) {
+        suggestions.push({ icon: '🕶️', label: '太陽眼鏡' });
+    }
+
+    return suggestions.slice(0, 4);
+}
+
+function renderClothingSuggestions(temp, weather) {
+    const container = document.getElementById('clothingSuggestions');
+    const suggestions = getClothingSuggestions(temp, weather);
+    
+    container.innerHTML = suggestions.map((item, idx) => `
+        <div class="clothing-item" style="animation-delay: ${idx * 0.05}s">
+            <div class="clothing-icon">${item.icon}</div>
+            <div class="clothing-label">${item.label}</div>
+        </div>
+    `).join('');
+}
+
+// 溫度趨勢圖
+function createTempChart(forecasts) {
+    const ctx = document.getElementById('tempChart');
+    if (!ctx) return;
+
+    const labels = forecasts.map(f => formatTime(f.startTime).split(' ')[1]);
+    const temps = forecasts.map(f => Math.round((parseInt(f.minTemp) + parseInt(f.maxTemp)) / 2));
+    
+    const team = TEAMS[currentTeam];
+    
+    if (tempChart) {
+        tempChart.destroy();
+    }
+
+    tempChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '溫度 (°C)',
+                data: temps,
+                borderColor: 'rgba(255, 255, 255, 0.9)',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 5,
+                pointBackgroundColor: 'white',
+                pointBorderColor: team.primary,
+                pointBorderWidth: 2,
+                pointHoverRadius: 7,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: 'white',
+                    bodyColor: 'white',
+                    padding: 12,
+                    displayColors: false,
+                    callbacks: {
+                        label: function(context) {
+                            return context.parsed.y + '°C';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    ticks: {
+                        color: 'rgba(255, 255, 255, 0.9)',
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        },
+                        callback: function(value) {
+                            return value + '°';
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.2)',
+                        drawBorder: false
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: 'rgba(255, 255, 255, 0.9)',
+                        font: {
+                            size: 11,
+                            weight: 'bold'
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)',
+                        drawBorder: false
+                    }
+                }
+            }
+        }
+    });
+}
+
+// LocalStorage 管理
+function saveFavoriteTeam(teamIndex) {
+    localStorage.setItem(STORAGE_KEY, teamIndex);
+    showToast('已設為預設球隊 ' + TEAMS[teamIndex].emoji, 'info');
+}
+
+function getFavoriteTeam() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved !== null ? parseInt(saved) : null;
+}
+
+function updateFavoriteButton() {
+    const btn = document.getElementById('favoriteBtn');
+    const favorite = getFavoriteTeam();
+    
+    if (favorite === currentTeam) {
+        btn.classList.add('active');
+        btn.textContent = '⭐';
+        btn.title = '已是預設球隊';
+    } else {
+        btn.classList.remove('active');
+        btn.textContent = '☆';
+        btn.title = '設為預設球隊';
+    }
+}
+
+function formatTime(timeStr) {
+    const date = new Date(timeStr);
+    return `${date.getMonth()+1}/${date.getDate()} ${String(date.getHours()).padStart(2, '0')}:00`;
+}
+
+async function fetchWeather(cityKey) {
+    try {
+        showLoading(true);
+        document.getElementById('loading-message').textContent = '載入天氣資料中...';
         
-        teamSelector.appendChild(b);
-      });
+        const response = await fetch(`${API_BASE_URL}/api/weather/${cityKey}`);
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error(result.message || '無法取得天氣資料');
+        }
+        
+        weatherCache[cityKey] = result.data;
+        return result.data;
+    } catch (error) {
+        console.error('取得天氣失敗:', error);
+        showToast('無法取得天氣資料,請檢查網路連線或稍後再試', 'error', 5000);
+        throw error;
+    } finally {
+        showLoading(false);
     }
+}
 
-    /* =========================
-       HELPERS: ICON / ADVICE / TIME
-       ========================= */
-    function getWeatherIcon(weather) {
-      if(!weather) return "🌤️";
-      if (weather.includes("晴")) return "☀️";
-      if (weather.includes("多雲")) return "⛅";
-      if (weather.includes("陰")) return "☁️";
-      if (weather.includes("雨")) return "🌧️";
-      if (weather.includes("雷")) return "⛈️";
-      return "🌤️";
-    }
-
-    function getAdvice(rainProb, maxTemp) {
-      let rainIcon = "🌂", rainText = "不用帶傘";
-      if (parseInt(rainProb) > 30) { rainIcon = "☂️"; rainText = "記得帶傘！"; }
-
-      const temp = parseInt(maxTemp);
-      let clothIcon="👕", clothText="舒適穿搭", tempAdvice="";
-      if (temp >= 33) { clothIcon="🎽"; clothText="超熱！背心上場"; tempAdvice="記得補充水分"; }
-      else if (temp >= 28) { clothIcon="👕"; clothText="短袖出發"; tempAdvice="適合戶外活動"; }
-      else if (temp >= 23) { clothIcon="👔"; clothText="長袖剛剛好"; tempAdvice="舒適宜人"; }
-      else if (temp >= 18) { clothIcon="🧥"; clothText="薄外套備著"; tempAdvice="早晚溫差大"; }
-      else { clothIcon="🧥"; clothText="厚外套必備"; tempAdvice="注意保暖"; }
-
-      return { rainIcon, rainText, clothIcon, clothText, tempAdvice };
-    }
-
-    function getTimePeriod(startTime) {
-      const hour = new Date(startTime).getHours();
-      if (hour >= 5 && hour < 11) return "早晨";
-      if (hour >= 11 && hour < 14) return "中午";
-      if (hour >= 14 && hour < 18) return "下午";
-      if (hour >= 18 && hour < 23) return "晚上";
-      return "深夜";
-    }
-
-    /* =========================
-       RENDER: HERO & MINI CARDS
-       ========================= */
-    function renderWeather(data) {
-      const forecasts = data.forecasts;
-      if(!forecasts || !forecasts.length) {
-        showToast('找不到天氣資料','error'); hideLoading();
+function renderWeather(data) {
+    if (!data || !data.forecasts || data.forecasts.length === 0) {
+        showToast('天氣資料格式錯誤', 'error');
         return;
-      }
-      const current = forecasts[0];
-      const others = forecasts.slice(1);
-      const advice = getAdvice(current.rain, current.maxTemp);
-      const period = getTimePeriod(current.startTime);
-      const avgTemp = Math.round((parseInt(current.maxTemp) + parseInt(current.minTemp))/2);
+    }
 
-      // hero
-      const heroHTML = `
-        <div class="hero-card" role="article" aria-label="目前天氣">
-          <div class="hero-period">${period}</div>
-          <div class="hero-temp-container">
-            <div class="hero-icon">${getWeatherIcon(current.weather)}</div>
-            <div class="hero-temp">${avgTemp}°</div>
-          </div>
-          <div class="hero-desc">${current.weather}</div>
-
-          <div class="advice-grid">
-            <div class="advice-item" aria-hidden="false">
-              <div class="advice-icon">${advice.rainIcon}</div>
-              <div class="advice-text">${advice.rainText}</div>
-              <div class="advice-subtext">降雨機率 ${current.rain}</div>
-            </div>
-            <div class="advice-item">
-              <div class="advice-icon">${advice.clothIcon}</div>
-              <div class="advice-text">${advice.clothText}</div>
-              <div class="advice-subtext">${advice.tempAdvice}</div>
-            </div>
-          </div>
-        </div>
-      `;
-      const heroContainer = document.getElementById('heroCardContainer');
-      heroContainer.innerHTML = heroHTML;
-
-      // future cards
-      const scroll = document.getElementById('futureForecasts');
-      scroll.innerHTML = '';
-      const todayDate = new Date().getDate();
-
-      others.forEach(f => {
-        let p = getTimePeriod(f.startTime);
-        const fDate = new Date(f.startTime);
-        if (fDate.getDate() !== todayDate) p = "明天" + p;
-
-        const card = document.createElement('article');
+    const current = data.forecasts[0];
+    
+    // 更新主要天氣卡片
+    const avgTemp = Math.round((parseInt(current.minTemp) + parseInt(current.maxTemp)) / 2);
+    const weatherEmoji = getEmoji(current.weather);
+    
+    document.getElementById('heroIcon').textContent = weatherEmoji;
+    document.getElementById('heroTemp').textContent = `${avgTemp}°`;
+    document.getElementById('heroWeatherDesc').textContent = current.weather;
+    document.getElementById('heroMinMaxTemp').textContent = 
+        `最低 ${current.minTemp}° / 最高 ${current.maxTemp}°`;
+    
+    // 天氣動畫效果
+    createWeatherEffect(current.weather);
+    
+    // 溫度趨勢圖
+    createTempChart(data.forecasts);
+    
+    // 更新 36 小時預報
+    const container = document.getElementById('futureForecasts');
+    container.innerHTML = '';
+    
+    data.forecasts.forEach((forecast, idx) => {
+        const card = document.createElement('div');
         card.className = 'mini-card';
-        card.setAttribute('role', 'article');
-        card.setAttribute('aria-label', `${p} 天氣: ${f.weather}, 溫度 ${f.minTemp} 至 ${f.maxTemp} 度, 降雨機率 ${f.rain}`);
+        card.style.animationDelay = `${idx * 0.05}s`;
+        
+        const avgTemp = Math.round((parseInt(forecast.minTemp) + parseInt(forecast.maxTemp)) / 2);
+        const icon = getEmoji(forecast.weather);
+        
         card.innerHTML = `
-          <div class="mini-time">${p}</div>
-          <div class="mini-icon" aria-hidden="true">${getWeatherIcon(f.weather)}</div>
-          <div class="mini-temp">${f.minTemp}° - ${f.maxTemp}°</div>
-          <div class="mini-rain">💧 ${f.rain}</div>
+            <div class="mini-card-time">${formatTime(forecast.startTime)}</div>
+            <div class="mini-card-icon">${icon}</div>
+            <div class="mini-card-temp">${avgTemp}°</div>
+            <div class="mini-card-pop">${forecast.rain}%</div>
         `;
-        scroll.appendChild(card);
-      });
+        container.appendChild(card);
+    });
+    
+    // 更新建議卡片
+    const advice = getAdvice(current.weather, current.comfort);
+    document.getElementById('adviceIcon').textContent = advice.icon;
+    document.getElementById('adviceTitle').textContent = advice.title;
+    document.getElementById('adviceText').textContent = advice.text;
+    
+    // 穿搭建議
+    renderClothingSuggestions(avgTemp, current.weather);
+    
+    // 更新時間
+    const now = new Date().toLocaleString('zh-TW', { 
+        year: 'numeric',
+        month: '2-digit', 
+        day: '2-digit',
+        hour: '2-digit', 
+        minute: '2-digit' 
+    });
+    document.getElementById('updateTime').textContent = `更新時間:${now}`;
+}
 
-      // update time text
-      const now = new Date();
-      const month = now.getMonth() + 1;
-      const date = now.getDate();
-      const days = ["週日","週一","週二","週三","週四","週五","週六"];
-      document.getElementById('updateTime').textContent = `${month}月${date}日 ${days[now.getDay()]}`;
-
-      showToast('更新完成 ✔️','success');
-    }
-
-    /* =========================
-       API CACHE SYSTEM
-       ========================= */
-    class WeatherCache {
-      constructor(duration = 10 * 60 * 1000) { // 10分鐘快取
-        this.duration = duration;
-        this.cache = new Map();
-      }
-
-      get(key) {
-        const item = this.cache.get(key);
-        if (!item) return null;
-        
-        if (Date.now() - item.timestamp > this.duration) {
-          this.cache.delete(key);
-          return null;
-        }
-        
-        return item.data;
-      }
-
-      set(key, data) {
-        this.cache.set(key, {
-          data,
-          timestamp: Date.now()
-        });
-      }
-
-      clear() {
-        this.cache.clear();
-      }
-
-      has(key) {
-        const item = this.cache.get(key);
-        if (!item) return false;
-        return (Date.now() - item.timestamp) <= this.duration;
-      }
-    }
-
-    const weatherCache = new WeatherCache();
-
-    /* =========================
-       ERROR HANDLING
-       ========================= */
-    class WeatherError extends Error {
-      constructor(message, code, details = null) {
-        super(message);
-        this.name = 'WeatherError';
-        this.code = code;
-        this.details = details;
-      }
-    }
-
-    function getErrorMessage(error) {
-      if (error instanceof WeatherError) {
-        switch(error.code) {
-          case 'OFFLINE':
-            return '網路連線中斷，請檢查網路後再試';
-          case 'TIMEOUT':
-            return '請求逾時，請稍後再試';
-          case 'API_ERROR':
-            return '天氣資料讀取失敗，請稍後再試';
-          case 'NO_DATA':
-            return '找不到天氣資料';
-          default:
-            return error.message;
-        }
-      }
-      return '發生未知錯誤，請稍後再試';
-    }
-
-    /* =========================
-       FETCH: Weather API
-       ========================= */
-    async function fetchWeather(city, forceRefresh = false, retryCount = 0) {
-      const MAX_RETRIES = 2;
-      
-      try {
-        // 檢查快取
-        if (!forceRefresh) {
-          const cached = weatherCache.get(city);
-          if (cached) {
-            console.log('使用快取資料:', city);
-            renderWeather(cached);
-            hideLoading();
-            showRefresh(true);
-            showToast('已載入快取資料 ⚡','success', 1500);
-            return;
-          }
-        }
-
-        // 檢查網路連線
-        if (!navigator.onLine) {
-          throw new WeatherError('網路連線中斷', 'OFFLINE');
-        }
-
-        // 如果沒有快取或強制刷新,則發送 API 請求
-        const API_URL = `https://weather-cpbl.zeabur.app/api/weather/${city}`;
-        const delay = new Promise(res => setTimeout(res, 800));
-        
-        // 加入逾時控制
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10秒逾時
-        
-        const fetcher = fetch(API_URL, { signal: controller.signal })
-          .then(r => {
-            clearTimeout(timeoutId);
-            if(!r.ok) {
-              if (r.status >= 500) {
-                throw new WeatherError('伺服器錯誤', 'API_ERROR', { status: r.status });
-              } else if (r.status === 404) {
-                throw new WeatherError('找不到資料', 'NO_DATA');
-              } else {
-                throw new WeatherError('網路錯誤', 'API_ERROR', { status: r.status });
-              }
-            }
-            return r.json();
-          })
-          .catch(err => {
-            clearTimeout(timeoutId);
-            if (err.name === 'AbortError') {
-              throw new WeatherError('請求逾時', 'TIMEOUT');
-            }
-            throw err;
-          });
-        
-        const [_, json] = await Promise.all([delay, fetcher]);
-
-        if (json && json.success) {
-          // 儲存到快取
-          weatherCache.set(city, json.data);
-          console.log('已儲存到快取:', city);
-          
-          renderWeather(json.data);
-          hideLoading();
-          showRefresh(true);
-        } else {
-          throw new WeatherError('API 回傳無效資料', 'NO_DATA');
-        }
-      } catch (err) {
-        console.error('天氣資料讀取錯誤:', err);
-        
-        // 重試機制
-        if (retryCount < MAX_RETRIES && err.code !== 'NO_DATA') {
-          console.log(`重試第 ${retryCount + 1} 次...`);
-          showToast(`重試中... (${retryCount + 1}/${MAX_RETRIES})`, 'info', 1500);
-          await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1))); // 指數退避
-          return fetchWeather(city, forceRefresh, retryCount + 1);
-        }
-        
-        hideLoading();
-        showRefresh(true);
-        
-        // 顯示錯誤訊息和重試按鈕
-        const errorMsg = getErrorMessage(err);
-        showErrorWithRetry(errorMsg, () => {
-          showLoading(true, '重新載入...');
-          showRefresh(false);
-          fetchWeather(city, true);
-        });
-      }
-    }
-
-    /* =========================
-       LOADING & REFRESH UI
-       ========================= */
-    function showLoading(show=true, text) {
-      const L = document.getElementById('loading');
-      const app = document.getElementById('appRoot');
-      if (show) {
-        L.style.display = 'flex';
-        if (text) document.getElementById('loadingText').textContent = text;
-        app.style.display = 'none';
-      } else {
-        L.style.display = 'none';
-        app.style.display = '';
-      }
-    }
-    function hideLoading(){ showLoading(false); }
-
-    function showRefresh(show=true){
-      const btn = document.getElementById('refreshBtn');
-      if (show) btn.classList.remove('hidden'); else btn.classList.add('hidden');
-    }
-
-    /* =========================
-       ERROR DISPLAY WITH RETRY
-       ========================= */
-    function showErrorWithRetry(message, retryCallback) {
-      const t = document.getElementById('toast');
-      t.className = 'toast error';
-      t.innerHTML = `
-        <div style="display:flex; align-items:center; gap:12px; justify-content:space-between;">
-          <span>${message}</span>
-          <button 
-            onclick="this.parentElement.parentElement.classList.remove('show'); arguments[0].retryFn();" 
-            style="background:white; color:#e53e3e; border:none; padding:6px 12px; border-radius:8px; font-weight:900; cursor:pointer; font-size:0.9rem;"
-            aria-label="重試載入天氣資料"
-          >
-            🔄 重試
-          </button>
-        </div>
-      `;
-      
-      // 儲存 callback 到 event 物件中
-      const btn = t.querySelector('button');
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        t.classList.remove('show');
-        retryCallback();
-      });
-      
-      setTimeout(() => { t.classList.add('show'); }, 20);
-      
-      // 不自動消失，需要用戶主動關閉或點擊重試
-    }
-
-    /* =========================
-       TOAST
-       ========================= */
-    let toastTimer = null;
-    function showToast(message, type='info', duration=2500) {
-      const t = document.getElementById('toast');
-      t.className = 'toast';
-      t.textContent = message;
-      if (type === 'success') t.classList.add('success');
-      if (type === 'error') t.classList.add('error');
-      // show
-      setTimeout(()=>{ t.classList.add('show'); }, 20);
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(()=>{ t.classList.remove('show'); }, duration);
-    }
-
-    /* =========================
-       SCROLL ARROW HINTS
-       ========================= */
-    const scrollContainer = document.getElementById('futureForecasts');
-    const arrowLeft = document.getElementById('arrowLeft');
-    const arrowRight = document.getElementById('arrowRight');
-    function updateArrows() {
-      if (!scrollContainer) return;
-      const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-      if (maxScroll > 10) {
-        arrowLeft.classList.add('visible');
-        arrowRight.classList.add('visible');
-        setTimeout(()=>{ arrowLeft.classList.remove('visible'); arrowRight.classList.remove('visible'); }, 2500);
-      } else {
-        arrowLeft.classList.remove('visible');
-        arrowRight.classList.remove('visible');
-      }
-    }
-    // allow keyboard scrolling
-    if (scrollContainer) {
-      scrollContainer.addEventListener('keydown', (e)=>{
-        if(e.key === 'ArrowRight') scrollContainer.scrollBy({ left: 160, behavior:'smooth' });
-        if(e.key === 'ArrowLeft') scrollContainer.scrollBy({ left:-160, behavior:'smooth' });
-      });
-    }
-
-    /* =========================
-       GELOCATION AUTO-SWITCH
-       ========================= */
-    function mapCoordsToTeam(lat, lng) {
-      // 非嚴格：用簡單經緯度區域劃分台灣主要都市範圍
-      // 台灣大致經緯度範圍：lat 21.7 - 25.3, lng 119.5 - 122
-      // 以主要城市範圍判斷
-      if (!lat || !lng) return null;
-      // Kaohsiung (高雄)
-      if (lat < 23.0 && lng > 120.2) return 'hawks';
-      // Tainan (台南)
-      if (lat < 23.5 && lng > 120.0 && lng < 120.6) return 'lions';
-      // Taichung (台中)
-      if (lat >= 23.8 && lat < 24.7 && lng >= 120.4 && lng < 121.0) return 'brothers';
-      // Taoyuan (桃園)
-      if (lat >= 24.8 && lat < 25.2 && lng >= 121.0 && lng < 121.3) return 'monkeys';
-      // NewTaipei (新北)
-      if (lat >= 24.9 && lat < 25.3 && lng >= 121.3 && lng < 121.6) return 'guardians';
-      // Taipei
-      if (lat >= 25.0 && lat < 25.4 && lng >= 121.4 && lng < 121.6) return 'dragons';
-      // fallback
-      return 'brothers';
-    }
-
-    function tryGeolocation() {
-      if (!navigator.geolocation) return Promise.resolve(null);
-      return new Promise(resolve => {
-        const geoTimeout = setTimeout(()=> resolve(null), 4000); // 4s timeout
-        navigator.geolocation.getCurrentPosition((pos) => {
-          clearTimeout(geoTimeout);
-          const { latitude:lat, longitude:lng } = pos.coords;
-          const team = mapCoordsToTeam(lat,lng);
-          resolve({lat,lng,team});
-        }, (err)=> {
-          clearTimeout(geoTimeout);
-          resolve(null);
-        }, { enableHighAccuracy:false, maximumAge:600000, timeout:3500 });
-      });
-    }
-
-    /* =========================
-       INIT
-       ========================= */
-    async function init() {
-      applyTeamTheme(currentTeam);
-      buildTeamButtons();
-      showLoading(true, '小張正在觀測氣象中...');
-
-      // try geolocation on first load only
-      if (justLoaded) {
-        const geo = await tryGeolocation();
-        if (geo && geo.team) {
-          // if geolocated team differs from saved, switch
-          if (geo.team !== currentTeam) {
-            applyTeamTheme(geo.team);
-            document.querySelectorAll('.team-btn').forEach(b => b.classList.toggle('active', b.dataset.team === geo.team));
-            showLoading(true, `依定位切換至 ${TEAMS[geo.team].name}...`);
-            await fetchWeather(TEAMS[geo.team].city);
-            justLoaded = false;
-            document.getElementById('appRoot').style.display = '';
-            return;
-          }
-        }
-      }
-
-      // default fetch
-      await fetchWeather(TEAMS[currentTeam].city);
-      document.getElementById('appRoot').style.display = '';
-      showRefresh(true);
-      updateArrows();
-      justLoaded = false;
-    }
-
-    /* =========================
-       EVENT: refresh button
-       ========================= */
-    document.getElementById('refreshBtn').addEventListener('click', ()=>{
-      showLoading(true,'更新中...');
-      showRefresh(false);
-      fetchWeather(TEAMS[currentTeam].city, true); // 強制刷新，不使用快取
+async function updateTeam(idx) {
+    currentTeam = idx;
+    const team = TEAMS[idx];
+    
+    // 更新主題色
+    document.body.style.background = team.gradient;
+    document.querySelector('.teams-bar-wrapper').style.background = 'rgba(255, 255, 255, 0.1)';
+    
+    // 更新 CSS 變數以影響圖表顏色
+    document.documentElement.style.setProperty('--accent', team.primary);
+    document.documentElement.style.setProperty('--accent-2', team.secondary);
+    
+    document.getElementById('currentTeamEmoji').textContent = team.emoji;
+    document.getElementById('currentTeamCity').textContent = team.city;
+    document.getElementById('teamNameBadge').textContent = team.name;
+    
+    document.querySelectorAll('.team-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', i === idx);
     });
 
-    /* =========================
-       ARROW CLICK (scroll)
-       ========================= */
-    arrowLeft.addEventListener('click', ()=> {
-      scrollContainer.scrollBy({ left:-160, behavior:'smooth' });
-    });
-    arrowRight.addEventListener('click', ()=> {
-      scrollContainer.scrollBy({ left:160, behavior:'smooth' });
-    });
+    particles.forEach(p => p.emoji = team.emoji);
+    
+    updateFavoriteButton();
+    
+    try {
+        let weatherData = weatherCache[team.cityKey];
+        if (!weatherData) {
+            weatherData = await fetchWeather(team.cityKey);
+        }
+        renderWeather(weatherData);
+    } catch (error) {
+        console.error('更新球隊天氣失敗:', error);
+    }
+}
 
-    // show arrows briefly on any scrollable content change
-    const observer = new MutationObserver(()=> updateArrows());
-    observer.observe(document.getElementById('futureForecasts'), { childList:true, subtree:true });
+function buildTeamButtons() {
+    const bar = document.getElementById('teamsBar');
+    TEAMS.forEach((team, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'team-btn';
+        btn.textContent = team.emoji;
+        btn.onclick = () => updateTeam(idx);
+        bar.appendChild(btn);
+    });
+}
 
-    // initial DOM prepared
+document.getElementById('refreshBtn').addEventListener('click', async () => {
+    const team = TEAMS[currentTeam];
+    delete weatherCache[team.cityKey];
+    showToast('重新載入天氣資料中...', 'info');
+    await updateTeam(currentTeam);
+    showToast('天氣資料已更新', 'info');
+});
+
+// 收藏按鈕事件
+document.getElementById('favoriteBtn').addEventListener('click', () => {
+    const favorite = getFavoriteTeam();
+    
+    if (favorite === currentTeam) {
+        // 取消收藏
+        localStorage.removeItem(STORAGE_KEY);
+        showToast('已取消預設球隊', 'info');
+    } else {
+        // 設為收藏
+        saveFavoriteTeam(currentTeam);
+    }
+    
+    updateFavoriteButton();
+});
+
+async function init() {
     buildTeamButtons();
+    initParticles();
+    
+    // 檢查是否有預設球隊
+    const favoriteTeam = getFavoriteTeam();
+    const initialTeam = favoriteTeam !== null ? favoriteTeam : 0;
+    
+    setTimeout(async () => {
+        document.getElementById('appRoot').style.display = 'flex';
+        await updateTeam(initialTeam);
+        
+        if (favoriteTeam !== null) {
+            showToast('已載入您的預設球隊 ' + TEAMS[favoriteTeam].emoji, 'info', 2000);
+        }
+    }, 800);
+}
 
-    // finally run init
-    init();
+init();
+</script>
 
-    // small accessibility: hide loading after heavy delay in case something fails visually
-    setTimeout(()=> {
-      const L = document.getElementById('loading');
-      if (L && L.style.display !== 'none') {
-        // if still visible long after init, keep it but show toast
-        showToast('等待資料中...', 'info');
-      }
-    }, 7000);
-
-  </script>
 </body>
 </html>
